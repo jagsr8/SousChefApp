@@ -1,7 +1,9 @@
 import React from 'react';
 import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView} from 'react-native';
 import { StackNavigator } from 'react-navigation';
+import WeeklyOverviewView from './WeeklyOverviewView.js';
 import RecipeDetailsView from './RecipeDetailsView.js';
+import ShoppingListView from './ShoppingListView.js';
 const win = Dimensions.get('window');
 
 class HomeScreen extends React.Component {
@@ -22,6 +24,14 @@ class HomeScreen extends React.Component {
         <Button
           onPress={() => navigate('Chat')}
           title="Recipe Details"
+        />
+        <Button
+          onPress={() => navigate('Overview')}
+          title="Weekly Overview"
+        />
+        <Button
+          onPress={() => navigate('List')}
+          title="Shopping List"
         />
 
       </View>
@@ -49,5 +59,7 @@ const styles = StyleSheet.create({
 export const SimpleApp = StackNavigator({
   Home: { screen: HomeScreen },
   Chat: { screen: RecipeDetailsView },
+  Overview: { screen: WeeklyOverviewView },
+  List: { screen: ShoppingListView },
 });
 
