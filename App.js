@@ -1,14 +1,28 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView} from 'react-native';
+import { AppRegistry, StyleSheet, StatusBar, Text, View, Button, Image, Dimensions, FlatList, ScrollView, TouchableWithoutFeedback} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import WeeklyOverviewView from './WeeklyOverviewView.js';
 import RecipeDetailsView from './RecipeDetailsView.js';
 import ShoppingListView from './ShoppingListView.js';
+import shoppingCart from './images/shopping-cart.png';
 const win = Dimensions.get('window');
 
 class HomeScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Welcome',
+  static navigationOptions = ({ navigation }) => {
+    const {state, setParams} = navigation;
+    return {
+      title: 'Weekly Overview',
+      headerStyle: styles.header,
+      headerTintColor: '#06988D',
+      headerTitleStyle: styles.headerTitle,
+      headerRight: (
+        <TouchableWithoutFeedback
+          title="Shopping List"
+        onPress={() => navigation.navigate('List')}>
+          <Image source={shoppingCart} style={styles.headerImage} />
+        </TouchableWithoutFeedback>
+      ),
+    };
   };
 
 
@@ -16,22 +30,28 @@ class HomeScreen extends React.Component {
     const { navigate } = this.props.navigation;
     return (
 
-      <View style={styles.container}>
 
-        <Button
-          onPress={() => navigate('Recipe')}
-          title="Recipe Details"
-        />
-        <Button
-          onPress={() => navigate('Overview')}
-          title="Weekly Overview"
-        />
-        <Button
-          onPress={() => navigate('List')}
-          title="Shopping List"
-        />
+     <View style={styles.container}>
+      <StatusBar
+        barStyle="light-content"
+      />
 
-      </View>
+      <WeeklyOverviewView navigate={navigate} />
+
+     </View>
+
+//        <Button
+//          onPress={() => navigate('Recipe')}
+//          title="Recipe Details"
+//        />
+//        <Button
+//          onPress={() => navigate('Overview')}
+//          title="Weekly Overview"
+//        />
+//        <Button
+//          onPress={() => navigate('List')}
+//          title="Shopping List"
+//        />
 
     );
   }
@@ -44,6 +64,16 @@ export default class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    backgroundColor: '#06988D',
+    borderBottomWidth: 0,
+  },
+  headerImage: {
+    height: 30,
+    width: 30,
+    opacity: 0.75,
+    marginRight: 20,
+  },
   container: {
     flex: 1,
     backgroundColor: '#06988D',
