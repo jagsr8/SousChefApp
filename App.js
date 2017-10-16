@@ -17,7 +17,6 @@ class HomeScreen extends React.Component {
       headerTitleStyle: styles.headerTitle,
       headerRight: (
         <TouchableWithoutFeedback
-          title="Shopping List"
         onPress={() => navigation.navigate('List')}>
           <Image source={shoppingCart} style={styles.headerImage} />
         </TouchableWithoutFeedback>
