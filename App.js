@@ -1,40 +1,57 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView} from 'react-native';
+import { AppRegistry, StyleSheet, StatusBar, Text, View, Button, Image, Dimensions, FlatList, ScrollView, TouchableWithoutFeedback} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import WeeklyOverviewView from './WeeklyOverviewView.js';
 import RecipeDetailsView from './RecipeDetailsView.js';
 import ShoppingListView from './ShoppingListView.js';
+import shoppingCart from './images/shopping-cart.png';
 const win = Dimensions.get('window');
 
 class HomeScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Welcome',
+  static navigationOptions = ({ navigation }) => {
+    const {state, setParams} = navigation;
+    return {
+      title: 'Weekly Overview',
+      headerStyle: styles.header,
+      headerTintColor: '#06988D',
+      headerTitleStyle: styles.headerTitle,
+      headerRight: (
+        <TouchableWithoutFeedback
+          title="Shopping List"
+        onPress={() => navigation.navigate('List')}>
+          <Image source={shoppingCart} style={styles.headerImage} />
+        </TouchableWithoutFeedback>
+      ),
+    };
   };
 
 
   render() {
     const { navigate } = this.props.navigation;
-    const data = [1, 2, 3, 4, 5];
-    // const sampledata = fetch('https://souschef-182502.appspot.com/api/v1/weekly_plan?user_id=48')
-    // console.log(sampledata)
     return (
 
-      <View style={styles.container}>
 
-        <Button
-          onPress={() => navigate('Chat')}
-          title="Recipe Details"
-        />
-        <Button
-          onPress={() => navigate('Overview')}
-          title="Weekly Overview"
-        />
-        <Button
-          onPress={() => navigate('List')}
-          title="Shopping List"
-        />
+     <View style={styles.container}>
+      <StatusBar
+        barStyle="light-content"
+      />
 
-      </View>
+      <WeeklyOverviewView navigate={navigate} />
+
+     </View>
+
+//        <Button
+//          onPress={() => navigate('Recipe')}
+//          title="Recipe Details"
+//        />
+//        <Button
+//          onPress={() => navigate('Overview')}
+//          title="Weekly Overview"
+//        />
+//        <Button
+//          onPress={() => navigate('List')}
+//          title="Shopping List"
+//        />
 
     );
   }
@@ -47,6 +64,16 @@ export default class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    backgroundColor: '#06988D',
+    borderBottomWidth: 0,
+  },
+  headerImage: {
+    height: 30,
+    width: 30,
+    opacity: 0.75,
+    marginRight: 20,
+  },
   container: {
     flex: 1,
     backgroundColor: '#06988D',
@@ -58,7 +85,7 @@ const styles = StyleSheet.create({
 
 export const SimpleApp = StackNavigator({
   Home: { screen: HomeScreen },
-  Chat: { screen: RecipeDetailsView },
+  Recipe: { screen: RecipeDetailsView },
   Overview: { screen: WeeklyOverviewView },
   List: { screen: ShoppingListView },
 });
