@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, SectionList} from 'react-native';
+import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, SectionList, StatusBar} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import CheckBox from 'react-native-check-box'
 
@@ -141,6 +141,9 @@ class RecipeDetailsView extends React.Component {
     return (
 
       <View style={styles.container}>
+        <StatusBar
+          barStyle="dark-content"
+        />
         <ScrollView>
             {/*
                 <SectionList style={styles.ingridentsContainer}

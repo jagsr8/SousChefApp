@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView} from 'react-native';
+import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 const win = Dimensions.get('window');
 
@@ -144,6 +144,9 @@ class RecipeDetailsView extends React.Component {
     // console.log(this.state.dataSource)
     return (
       <View style={styles.container}>
+        <StatusBar
+          barStyle="dark-content"
+        />
         <ScrollView>
         <Image
         style={styles.image}
