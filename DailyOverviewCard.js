@@ -20,9 +20,9 @@ export default class DailyOverviewCard extends View {
 
           <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                       underlayColor="rgba(0,0,0,0.08)"
-                            onPress={() => { navigate('Recipe') }}>
+                            onPress={() => { navigate('Recipe', {}) }}>
             <View style={styles['DailyOverviewCard__recipe']}>
-              <Image source={omelette} style={styles['DailyOverviewCard__recipeImage']} />
+              <Image source={omelette} resizeMode="contain" style={styles['DailyOverviewCard__recipeImage']} />
               <View style={styles['DailyOverviewCard__recipeText']}>
                 <Text style={styles['DailyOverviewCard__recipeMeal']}>
                   Breakfast
@@ -37,9 +37,9 @@ export default class DailyOverviewCard extends View {
 
           <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                       underlayColor="rgba(0,0,0,0.08)"
-                            onPress={() => { navigate('Recipe') }}>
+                            onPress={() => { navigate('Recipe', {}) }}>
             <View style={styles['DailyOverviewCard__recipe']}>
-              <Image source={chickenParm} style={styles['DailyOverviewCard__recipeImage']} />
+              <Image source={chickenParm} resizeMode="contain" style={styles['DailyOverviewCard__recipeImage']} />
               <View style={styles['DailyOverviewCard__recipeText']}>
                 <Text style={styles['DailyOverviewCard__recipeMeal']}>
                   Lunch
@@ -54,9 +54,9 @@ export default class DailyOverviewCard extends View {
 
           <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                       underlayColor="rgba(0,0,0,0.08)"
-                            onPress={() => { navigate('Recipe') }}>
+                            onPress={() => { navigate('Recipe', {}) }}>
             <View style={[styles['DailyOverviewCard__recipe'],styles['DailyOverviewCard__recipe--bottom']]}>
-              <Image source={cod} style={styles['DailyOverviewCard__recipeImage']} />
+              <Image source={cod} resizeMode="contain" style={styles['DailyOverviewCard__recipeImage']} />
               <View style={styles['DailyOverviewCard__recipeText']}>
                 <Text style={styles['DailyOverviewCard__recipeMeal']}>
                   Dinner
@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
     textAlign: 'left',
     fontSize: 13,
+    marginBottom: 2,
   },
   'DailyOverviewCard__recipeName': {
     color: '#FFF',
