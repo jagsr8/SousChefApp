@@ -1,93 +1,93 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView} from 'react-native';
+import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 const win = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#06988D',
-      justifyContent: 'flex-start'
-    },
-    image: {
-      flex: 0,
-      alignSelf: 'stretch',
-      width: win.width,
-      height: 200,
-    },
-    text: {
-      fontSize: 30,
-      textAlign: 'center',
-      backgroundColor: 'rgba(0,0,0,0)',
-      color: 'white',
-      position: "absolute",
-      top: 150,
-      left: 20,
-    },
-    horizontalView: {
-      flexDirection:'row',
-      alignItems:'center',
-      justifyContent: 'space-between',
-      paddingTop: 10
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#06988D',
+    justifyContent: 'flex-start'
+  },
+  image: {
+    flex: 0,
+    alignSelf: 'stretch',
+    width: win.width,
+    height: 200,
+  },
+  text: {
+    fontSize: 30,
+    textAlign: 'center',
+    backgroundColor: 'rgba(0,0,0,0)',
+    color: 'white',
+    position: "absolute",
+    top: 150,
+    left: 20,
+  },
+  horizontalView: {
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent: 'space-between',
+    paddingTop: 10
+  },
 
-    ingridentsList: {
-      flexDirection:'row',
-      alignItems:'center',
-      justifyContent: 'space-between',
-      paddingTop: 10,
-      paddingBottom: 10,
-      borderBottomWidth: 1,
-      borderColor: 'rgba(255,255,255,.2)',
-    },
-    ingridentsContainer: {
-      borderRadius: 10,
-      backgroundColor: '#048277',
-      marginLeft: 30,
-      marginRight: 30,
-      marginTop: 30,
-    },
-    directionsContainer: {
-      marginLeft: 30,
-      marginRight: 30,
-      marginTop: 10,
-    },
-    headerText: {
-      fontSize: 25,
-      textAlign: 'left',
-      marginLeft: 30,
-      marginTop: 30,
-      backgroundColor: 'rgba(0,0,0,0)',
-      color: 'white',
-    },
-    textOnHorizontalView: {
-      fontSize: 20,
-      color: 'white',
-      paddingLeft: 10,
-      paddingRight: 10
+  ingridentsList: {
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent: 'space-between',
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(255,255,255,.2)',
+  },
+  ingridentsContainer: {
+    borderRadius: 10,
+    backgroundColor: '#048277',
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 30,
+  },
+  directionsContainer: {
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 10,
+  },
+  headerText: {
+    fontSize: 25,
+    textAlign: 'left',
+    marginLeft: 30,
+    marginTop: 30,
+    backgroundColor: 'rgba(0,0,0,0)',
+    color: 'white',
+  },
+  textOnHorizontalView: {
+    fontSize: 20,
+    color: 'white',
+    paddingLeft: 10,
+    paddingRight: 10
 
-    },
-    changeRecipeButton: {
-      backgroundColor: '#066963',
-      borderRadius: 30,
-      paddingLeft: 30,
-      paddingRight: 30,
-      marginLeft: 30,
-      marginRight: 30,
-      marginTop: 5,
-      marginBottom: 5,
-    },
-    startCookingButton: {
-      backgroundColor: '#FFFFFF',
-      borderRadius: 30,
-      paddingLeft: 30,
-      paddingRight: 30,
-      marginLeft: 30,
-      marginRight: 30,
-      marginTop: 5,
-      marginBottom: 5,
-    }
-  });
+  },
+  changeRecipeButton: {
+    backgroundColor: '#066963',
+    borderRadius: 30,
+    paddingLeft: 30,
+    paddingRight: 30,
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  startCookingButton: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 30,
+    paddingLeft: 30,
+    paddingRight: 30,
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 5,
+    marginBottom: 5,
+  }
+});
 
 export function getMoviesFromApiAsync() {
       return fetch('https://souschef-182502.appspot.com/api/v1/users/weekly_plan?user_id=1')
@@ -102,8 +102,14 @@ export function getMoviesFromApiAsync() {
 }
 
 class RecipeDetailsView extends React.Component {
-  static navigationOptions = {
-    title: 'Recipe Details',
+  static navigationOptions = ({ navigation }) => {
+    const {navigate, state, setParams} = navigation;
+    const {params} = state;
+
+    return {
+      header: null,
+      gesturesEnabled: true,
+    };
   };
 
   constructor(props) {
@@ -208,7 +214,7 @@ class RecipeDetailsView extends React.Component {
         <View style={styles.changeRecipeButton}>
 
         <Button 
-          onPress={() => navigate('Chat')}
+          onPress={() => navigate('Overview', {})}
           title={"Change Recipe"}
           color="#FFFFFF"
 
@@ -218,7 +224,7 @@ class RecipeDetailsView extends React.Component {
 
         <View style={styles.startCookingButton}>
           <Button
-            onPress={() => navigate('Chat')}
+            onPress={() => navigate('Overview', {})}
             title="Start Cooking"
             color="#86A791"
           />
