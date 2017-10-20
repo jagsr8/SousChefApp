@@ -84,12 +84,6 @@ export default class WeeklyOverviewView extends View {
       </View>
     );
   }
-
-  selectRecipes() {
-    navigationOptions.headerRight = (
-      <Button title="Done" style={styles.headerRight} onPress={() => this.props.navigation.navigate('List', {})} />
-    )
-  }
 }
 
 const styles = StyleSheet.create({
