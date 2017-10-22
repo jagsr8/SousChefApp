@@ -156,7 +156,7 @@ class RecipeDetailsView extends React.Component {
         resizeMode={'cover'}   /* <= changed  */
         source={{uri: 'https://www.incredibleegg.org/wp-content/uploads/basic-french-omelet-930x550.jpg'}}
         />
-        
+
         <Text
         style= {styles.text}>
         French Omelette
@@ -184,7 +184,7 @@ class RecipeDetailsView extends React.Component {
           data={[{key: 'Eggs', value: '3 large'}, {key: 'Spinach', value: '3 oz'}, {key: 'Yellow Onions', value: '0.5 large'}]}
 
           renderItem={
-            ({item}) => 
+            ({item}) =>
               <View style={styles.ingridentsList}>
                 <Text style = {styles.textOnHorizontalView}>{item.key}</Text>
                 <Text style = {styles.textOnHorizontalView}>{item.value}</Text>
@@ -196,13 +196,13 @@ class RecipeDetailsView extends React.Component {
             Directions
         </Text>
         <FlatList style={styles.directionsContainer}
-          data={[{key: '1. Beat eggs, water, salt and pepper in small bowl until blended.'}, 
-          {key: '2. Heat butter in 7 to 10-inch nonstick omelet pan or skillet over medium-high heat until hot. Pour in egg mixture.'}, 
-          {key: '3. Gently push cooked portions from edges toward the center with inverted turner so that uncooked eggs can reach the hot pan surface.'}, 
+          data={[{key: '1. Beat eggs, water, salt and pepper in small bowl until blended.'},
+          {key: '2. Heat butter in 7 to 10-inch nonstick omelet pan or skillet over medium-high heat until hot. Pour in egg mixture.'},
+          {key: '3. Gently push cooked portions from edges toward the center with inverted turner so that uncooked eggs can reach the hot pan surface.'},
           {key: '4. When top surface of eggs is thickened and no visible liquid egg remains, place cut up onion and spinach on one side of the omelet. Fold omelet in half with turner. Serve immediately.'}]}
 
           renderItem={
-            ({item}) => 
+            ({item}) =>
               <View style={styles.ingridentsList}>
                 <Text style = {styles.textOnHorizontalView}>{item.key}</Text>
                 <Text style = {styles.textOnHorizontalView}>{item.value}</Text>
@@ -213,7 +213,7 @@ class RecipeDetailsView extends React.Component {
 
         <View style={styles.changeRecipeButton}>
 
-        <Button 
+        <Button
           onPress={() => navigate('Overview', {})}
           title={"Change Recipe"}
           color="#FFFFFF"

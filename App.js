@@ -4,8 +4,14 @@ import { StackNavigator } from 'react-navigation';
 import WeeklyOverviewView from './WeeklyOverviewView.js';
 import RecipeDetailsView from './RecipeDetailsView.js';
 import ShoppingListView from './ShoppingListView.js';
+import StartUpView from './StartUpView.js';
+import LoginView from './LoginView.js';
+import SignUpView from './SignUpView.js';
 import shoppingCart from './images/shopping-cart.png';
-import logo from './images/logo.png';
+import logo from './images/chevron-right.png';
+import * as firebase from 'firebase';
+
+
 const win = Dimensions.get('window');
 
 class HomeScreen extends React.Component {
@@ -22,6 +28,13 @@ class HomeScreen extends React.Component {
     const { navigate } = this.props.navigation;
     navigate('Overview', {});
     // setTimeout(() => navigate('Overview', {}), 5000);
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaH5KTQyiFCdK9b49MAMO-IYynWLy0vZA",
+      authDomain: "souschef-182502.firebaseapp.com",
+      databaseURL: "https://souschef-182502.firebaseio.com",
+      storageBucket: "souschef-182502.appspot.com"
+    };
+    firebase.initializeApp(firebaseConfig);
   }
 
   render() {
@@ -64,7 +77,9 @@ const styles = StyleSheet.create({
 
 
 export const SimpleApp = StackNavigator({
-  Home: { screen: HomeScreen },
+  Home: { screen: StartUpView },
+  SignUp: { screen: SignUpView },
+  Login: { screen: LoginView },
   Recipe: { screen: RecipeDetailsView },
   Overview: { screen: WeeklyOverviewView },
   List: { screen: ShoppingListView },
@@ -74,4 +89,3 @@ export const SimpleApp = StackNavigator({
     gesturesEnabled: false,
   },
 });
-

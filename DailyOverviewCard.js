@@ -7,7 +7,7 @@ import chickenParm from './images/chicken-parmigiana.png';
 import cod from './images/cod.png';
 
 export default class DailyOverviewCard extends View {
-  
+
 
   render() {
     const navigate = this.props.navigate;
@@ -62,7 +62,7 @@ export default class DailyOverviewCard extends View {
                   Dinner
                 </Text>
                 <Text numberOfLines={1} style={styles['DailyOverviewCard__recipeName']}>
-                  Pan Seared Cod with 
+                  Pan Seared Cod with
                 </Text>
               </View>
               <Image source={chevronRight} style={styles['DailyOverviewCard__rightChevron']} />
