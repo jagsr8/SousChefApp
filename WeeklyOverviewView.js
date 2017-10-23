@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, FlatList, Button, Image, TouchableWithoutFeedback } from 'react-native';
+import firebase from 'firebase';
 import DailyOverviewCard from './DailyOverviewCard.js';
 import profileIcon from './images/profile.png';
 import shoppingCart from './images/shopping-cart.png';
@@ -30,7 +31,7 @@ export default class WeeklyOverviewView extends View {
       rightHeader = (
         <View style={styles.headerActions}>
           <TouchableWithoutFeedback
-            onPress={() => {}}>
+            onPress={() => navigate('Profile', {})}>
             <Image source={profileIcon} style={styles.headerImage} />
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -50,34 +51,47 @@ export default class WeeklyOverviewView extends View {
       headerRight: rightHeader,
     };
   };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      weeklyPlan: [],
+    };
+    
+  }
+
+  componentDidMount() {
+    this.getMoviesFromApiAsync().then((plan) => {
+      this.setState({
+        weeklyPlan: plan
+      });
+    });
+  }
+
+  getMoviesFromApiAsync() {
+    return fetch(`http://souschef-182502.appspot.com/api/v1/users/weekly_plan?user_id=${firebase.auth().currentUser.uid}`)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return responseJson;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
   
   render() {
     const { navigate } = this.props.navigation;
-    let days = [{
-      key: 'Monday\n10/16'
-    },
-    {
-      key: 'Tuesday\n10/17'
-    },
-    {
-      key: 'Wednesday\n10/18'
-    },
-    {
-      key: 'Thursday\n10/19'
-    },
-    {
-      key: 'Friday\n10/20'
-    }];
 
     return (
       <View style={styles['WeeklyOverview']}>
         <Text style={styles['WeeklyOverview__title']}>Recipes This Week</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
           <FlatList
-            data={days}
+            data={this.state.weeklyPlan}
             renderItem={
-              ({item}) => 
-                <DailyOverviewCard day={item.key} navigate={navigate} />
+              ({item, index}) => 
+                <DailyOverviewCard key={index} day={index} recipes={item} navigate={navigate} />
             }
           />
         </ScrollView>

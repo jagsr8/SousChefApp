@@ -7,10 +7,8 @@ import ShoppingListView from './ShoppingListView.js';
 import StartUpView from './StartUpView.js';
 import LoginView from './LoginView.js';
 import SignUpView from './SignUpView.js';
-import shoppingCart from './images/shopping-cart.png';
-import logo from './images/chevron-right.png';
+import ProfileView from './ProfileView.js';
 import * as firebase from 'firebase';
-
 
 const win = Dimensions.get('window');
 
@@ -26,8 +24,6 @@ class HomeScreen extends React.Component {
 
   componentWillMount() {
     const { navigate } = this.props.navigation;
-    navigate('StartUpView', {});
-    // setTimeout(() => navigate('Overview', {}), 5000);
     const firebaseConfig = {
       apiKey: "AIzaSyCaH5KTQyiFCdK9b49MAMO-IYynWLy0vZA",
       authDomain: "souschef-182502.firebaseapp.com",
@@ -35,6 +31,11 @@ class HomeScreen extends React.Component {
       storageBucket: "souschef-182502.appspot.com"
     };
     firebase.initializeApp(firebaseConfig);
+    if(firebase.auth().currentUser) {
+      navigate('Overview', {});
+    } else {
+      navigate('StartUpView', {});
+    }
   }
 
   render() {
@@ -43,7 +44,6 @@ class HomeScreen extends React.Component {
       <StatusBar
         barStyle="light-content"
       />
-      <Image source={logo} resizeMode="contain" style={styles.loadingImage} />
      </View>
     );
   }
@@ -66,12 +66,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  loadingImage: {
-    flex: 1,
-    width: 0.8 * win.width,
-    height: 0.8 * win.height,
-    opacity: 0,
-  },
 });
 
 
@@ -80,8 +74,9 @@ export const SimpleApp = StackNavigator({
   Home: { screen: StartUpView },
   SignUp: { screen: SignUpView },
   Login: { screen: LoginView },
-  Recipe: { screen: RecipeDetailsView },
+  Profile: { screen: ProfileView },
   Overview: { screen: WeeklyOverviewView },
+  Recipe: { screen: RecipeDetailsView },
   List: { screen: ShoppingListView },
 }, {
   headerMode: 'screen',

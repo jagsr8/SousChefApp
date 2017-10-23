@@ -1,9 +1,10 @@
 import React from 'react';
 import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, TouchableOpacity} from 'react-native';
 import { StackNavigator } from 'react-navigation';
-const win = Dimensions.get('window');
 import firebase from 'firebase';
+import logo from './images/logo.png';
 
+const win = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
@@ -13,15 +14,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     logoContainer: {
-        marginVertical: 100
+        marginTop: 50,
     },
     logo: {
         alignSelf: 'center',
         flexGrow: 1,
         justifyContent: 'center',
-        width: 100,
-        height: 100,
-        marginVertical: 150
+        width: 300,
+        height: 300,
+        marginBottom: 100,
     },
     buttonContainer: {
         backgroundColor: '#066963',
@@ -72,10 +73,10 @@ export default class StartUpView extends React.Component {
     const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
-        <View style={styles.loginContainer}>
+        <View style={styles.logoContainer}>
             <Image
                 style={styles.logo}
-                source={require('./images/chevron-right.png')}/>
+                source={logo}/>
         </View>
         <View style={styles.formContainer}>
             <TouchableOpacity style={styles.buttonContainer}
