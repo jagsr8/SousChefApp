@@ -49,6 +49,10 @@ export default class SignUpForm extends React.Component {
         const { email, password, name } = this.state;
         firebase.auth().createUserWithEmailAndPassword(email, password)
                     .then((userData) => {
+                        fetch('https://souschef-182502.appspot.com/api/v1/users/create_profile?user_id='+userData['uid']+'&name='+name)
+                            .catch(() => {
+                                this.setState({ error: 'Authentication failed.', loading: false })
+                            });
                         this.setState({ error: '', loading: false });
                         this.props.navigate('Login', {});
 
