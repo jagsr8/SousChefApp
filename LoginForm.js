@@ -48,11 +48,12 @@ export default class LoginForm extends React.Component {
         this.setState({ error: '', loading: true });
         const { email, password } = this.state;
         firebase.auth().signInWithEmailAndPassword(email, password)
-                    .then(() => {
+                    .then((userData) => {
                         this.setState({ error: '', loading: false });
                         this.props.navigate('Overview', {});
                     })
-                    .catch(() => {
+                    .catch((error) => {
+                        console.log(error)
                         this.setState({ error: 'Authentication failed.', loading: false });
             });
     }

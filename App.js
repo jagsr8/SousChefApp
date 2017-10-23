@@ -26,7 +26,7 @@ class HomeScreen extends React.Component {
 
   componentWillMount() {
     const { navigate } = this.props.navigation;
-    navigate('Overview', {});
+    navigate('StartUpView', {});
     // setTimeout(() => navigate('Overview', {}), 5000);
     const firebaseConfig = {
       apiKey: "AIzaSyCaH5KTQyiFCdK9b49MAMO-IYynWLy0vZA",

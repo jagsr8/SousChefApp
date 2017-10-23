@@ -55,7 +55,6 @@ export default class SignUpForm extends React.Component {
                             });
                         this.setState({ error: '', loading: false });
                         this.props.navigate('Login', {});
-
                     })
                     .catch(() => {
                         this.setState({ error: 'Authentication failed.', loading: false });
