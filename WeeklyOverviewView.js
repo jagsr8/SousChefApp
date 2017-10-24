@@ -58,7 +58,7 @@ export default class WeeklyOverviewView extends View {
     this.state = {
       weeklyPlan: [],
     };
-    
+
   }
 
   componentDidMount() {
@@ -79,7 +79,7 @@ export default class WeeklyOverviewView extends View {
         console.error(error);
       });
   }
-  
+
   render() {
     const { navigate } = this.props.navigation;
 
@@ -90,7 +90,7 @@ export default class WeeklyOverviewView extends View {
           <FlatList
             data={this.state.weeklyPlan}
             renderItem={
-              ({item, index}) => 
+              ({item, index}) =>
                 <DailyOverviewCard key={index} day={index} recipes={item} navigate={navigate} />
             }
           />

@@ -63,7 +63,7 @@ export default class SignUpForm extends React.Component {
 
     renderButtonOrSpinner() {
         if (this.state.loading) {
-            return <ActivityIndicator size='small' />;
+            return <ActivityIndicator color='#FFFFFF' size='small' />;
         }
         return <TouchableOpacity style={styles.buttonContainer}
             onPress={this.signup.bind(this)}>

@@ -39,8 +39,8 @@ const styles = StyleSheet.create({
 export default class LoginForm extends React.Component {
 
     state = {
-        email: '',
-        password: '',
+        email: 'c@mail.com',
+        password: 'aaaaaaaa',
         loading: false
     }
 
@@ -60,7 +60,7 @@ export default class LoginForm extends React.Component {
 
     renderButtonOrSpinner() {
         if (this.state.loading) {
-            return <ActivityIndicator size='small' />;
+            return <ActivityIndicator color='#FFFFFF' size='small'/>;
         }
         return <TouchableOpacity style={styles.buttonContainer}
             onPress={this.login.bind(this)}>

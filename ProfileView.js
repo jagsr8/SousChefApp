@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, Dimensions, Text, View, ScrollView, FlatList, Picker, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
+import { StyleSheet, Dimensions, ActivityIndicator, Text, View, ScrollView, FlatList, Picker, TouchableWithoutFeedback, TouchableHighlight, TextInput, TouchableOpacity } from 'react-native';
+import firebase from 'firebase';
+import TagInput from './TagInput.js';
 
 export default class ProfileView extends View {
   static navigationOptions = ({ navigation }) => {
@@ -37,38 +39,95 @@ export default class ProfileView extends View {
 
   constructor(props) {
     super(props);
-  
-    this.state = {diet: "none"};
+
+    this.state = {
+        diet: "none",
+        loading: false,
+        tags: [],
+        exc: '',
+        tag:''
+    };
   }
 
   componentDidMount() {
-    this.props.navigation.setParams({ onDone: this.updateDietaryPreferences.bind(this) });
+      this.props.navigation.setParams({ onDone: this.updateDietaryPreferences.bind(this) });
+      this.getMoviesFromApiAsync().then((plan) => {
+          console.log()
+          var exclus = plan['exclusions'];
+          var die = plan['diet'];
+          this.setState({
+              tags: plan['exclusions'],
+              diet: die,
+            });
+        });
+  }
+
+  getMoviesFromApiAsync() {
+    return fetch(`http://souschef-182502.appspot.com/api/v1/users/get_profile?user_id=${firebase.auth().currentUser.uid}`)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return responseJson;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   updateDietaryPreferences() {
-    this.props.navigation.navigate('Overview', {});
-  }
-  
-  render() {
-    const { navigate, state } = this.props.navigation;
-    let days = [{
-      key: 'Monday'
-    },
-    {
-      key: 'Tuesday'
-    },
-    {
-      key: 'Wednesday'
-    },
-    {
-      key: 'Thursday'
-    },
-    {
-      key: 'Friday'
-    }];
+      this.setState({ error: '', loading: true });
+      var uid = firebase.auth().currentUser.uid;
+      console.log(this.state.diet);
+      fetch('https://souschef-182502.appspot.com/api/v1/users/update_profile?user_id='+uid+'&diet='+this.state.diet+'&exclusions='+this.state.tags.join())
+          .then(() => {
+              fetch('https://souschef-182502.appspot.com/api/v1/users/weekly_plan_create?user_id='+uid)
+                  .then(() => {
+                      this.props.navigation.navigate('Overview', {});
+                  })
+          })
+          .catch((error) => {
+              console.log(error);
+              this.setState({ error: 'Cannot create weekly view'})
+          });
 
-    return (
-      <View style={styles.profile}>
+  }
+
+  addExclusion() {
+      this.state.tags.push(this.state.exc);
+      this.setState({ tags: this.state.tags });
+  }
+
+  toggleSet(item) {
+      if (this.selectionSet.has(item.key)) {
+          this.selectionSet.delete(item.key);
+      } else {
+          this.selectionSet.add(item.key);
+      }
+  }
+
+  renderProfileOrSpinner() {
+      if (this.state.loading) {
+          return <View style={styles.activity}>
+                    <ActivityIndicator color='#FFFFFF' size='large' />
+                 </View>;
+      }
+      const { navigate, state } = this.props.navigation;
+      let diets = [{
+        key: 'Vegetarian'
+      },
+      {
+        key: 'Vegan'
+      },
+      {
+        key: 'Paleo'
+      },
+      {
+        key: 'Ketogenic'
+      },
+      {
+        key: 'Gluten free'
+      }];
+
+      return <View style={styles.profile}>
         <Text style={styles.profileTitle}>Profile</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.selectionContainer}>
@@ -81,7 +140,7 @@ export default class ProfileView extends View {
                             style={styles.selectionPicker}
                         itemStyle={{height: 100, color: 'white',}}>
               <Picker.Item label="None" value="none" />
-              {days.map((item, index) => {
+              {diets.map((item, index) => {
                 return <Picker.Item key={index} label={item.key} value={item.key} />
               })}
             </Picker>
@@ -91,21 +150,42 @@ export default class ProfileView extends View {
               Dietary Exclusions
             </Text>
             <Text style={styles.selectionSubtitle}>Select all applicable exclusions.</Text>
-            <View style={styles.selectionList}>
-              {days.map((item, index) => {
-                return (
-                  <TouchableHighlight key={index}
-                                  onPress={() => {}}
-                                    style={styles.selection}
-                            underlayColor="white">
-                    <Text style={styles.selectionText}>{item.key}</Text>
-                  </TouchableHighlight>
-                )
-              })}
-            </View>
+            <TagInput
+                 tagContainerStyle={styles.tagStyle}
+                 value={this.state.tags}
+                 onChange={(tags) => this.setState({tags})}
+                 labelExtractor={(tag) => tag}
+                 text={''}
+                 onChangeText={()=>{}}
+                 tagColor={'#06988D'}
+               />
+            <View style={styles.tagInputContainer}>
+                <TextInput
+                  placeholder='Exclusions'
+                  placeholderTextColor = 'rgba(255,255,255,0.4)'
+                  autoCorrect ={false}
+                  style={styles.input}
+                  value={this.state.exc}
+                  onChangeText={exc => this.setState({ exc })}
+                  />
+                  <TouchableOpacity style={styles.buttonInput}
+                      onPress={() => {
+                          this.addExclusion()
+                      }}>
+                      <Text style={styles.buttonText}>Sign Up</Text>
+                  </TouchableOpacity>
+             </View>
+
           </View>
         </ScrollView>
-      </View>
+      </View>;
+  }
+
+  render() {
+
+
+    return (
+        this.renderProfileOrSpinner()
     );
   }
 }
@@ -143,6 +223,15 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     backgroundColor: '#07988D',
     alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  activity: {
+    flex: 1,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 40,
+    backgroundColor: '#07988D',
+    alignItems: 'center',
     justifyContent: 'center',
   },
   profileTitle: {
@@ -189,7 +278,7 @@ const styles = StyleSheet.create({
   selectionList: {
     flex: 1,
     flexDirection: 'row',
-    flexWrap: 'wrap', 
+    flexWrap: 'wrap',
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
@@ -205,4 +294,43 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
   },
+  input: {
+      width: 150,
+      backgroundColor: 'rgba(0,0,0,0.15)',
+      color: '#FFF',
+      borderRadius: 10,
+      fontSize: 13,
+      fontWeight: 'normal',
+      textAlign: 'left',
+      paddingHorizontal: 20,
+      marginHorizontal: 20,
+      marginVertical: 10,
+      paddingVertical: 10,
+      justifyContent: 'center'
+  },
+  buttonInput: {
+      backgroundColor: 'rgba(0,0,0,0.15)',
+      borderRadius: 10,
+      paddingHorizontal: 20,
+      marginHorizontal: 10,
+      marginVertical: 10,
+      paddingVertical: 10,
+      justifyContent: 'center'
+  },
+  tagInputContainer: {
+      flexDirection: 'row',
+      flex: 1
+  },
+  buttonText: {
+      textAlign: 'center',
+      color: '#FFFFFF',
+      fontWeight: '700',
+      fontSize: 13
+  },
+  tagStyle: {
+      backgroundColor: 'rgba(0,0,0,0.15)',
+      borderRadius: 10,
+      marginHorizontal: 5,
+      justifyContent: 'center',
+  }
 });
