@@ -180,7 +180,6 @@ class RecipeDetailsView extends React.Component {
 
     return {
       header: null,
-      gesturesEnabled: true,
     };
   };
 

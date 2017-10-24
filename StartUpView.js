@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, TouchableOpacity} from 'react-native';
+import { AppRegistry, StyleSheet, StatusBar, Text, View, Button, Image, Dimensions, TouchableOpacity} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import firebase from 'firebase';
 import logo from './images/logo.png';
@@ -73,6 +73,9 @@ export default class StartUpView extends React.Component {
     const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
+        <StatusBar
+          barStyle="light-content"
+        />
         <View style={styles.logoContainer}>
             <Image
                 style={styles.logo}

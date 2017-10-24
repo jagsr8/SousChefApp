@@ -1,8 +1,7 @@
 import React from 'react';
 import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, SectionList, TouchableWithoutFeedback} from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import firebase from 'firebase';
 import ShoppingCategoryCard from './ShoppingCategoryCard.js';
-
 
 const win = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -14,7 +13,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     marginTop: 5,
-    marginRight: 20,
+    marginHorizontal: 20,
   },
   headerImage: {
     height: 30,
@@ -25,7 +24,6 @@ const styles = StyleSheet.create({
   headerText: {
     color: '#FFF',
     fontSize: 17,
-    fontWeight: 'bold',
     paddingTop: 8,
   },
   container: {
@@ -49,108 +47,71 @@ const styles = StyleSheet.create({
 export default class ShoppingListView extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
-    const {navigate, state, setParams} = navigation;
+    const {navigate, goBack, state, setParams} = navigation;
     const {params} = state;
 
     return {
       title: 'Shopping List',
       headerStyle: styles.header,
       headerTintColor: '#06988D',
-      headerLeft: null,
+      headerLeft: <View style={styles.headerActions}>
+                    <TouchableWithoutFeedback onPress={() => goBack()}>
+                      <View><Text style={styles.headerText}>Cancel</Text></View>
+                    </TouchableWithoutFeedback>
+                  </View>,
       headerRight: <View style={styles.headerActions}>
-                     <TouchableWithoutFeedback onPress={() => navigate('Overview', {})}>
-                       <View><Text style={styles.headerText}>Done</Text></View>
+                     <TouchableWithoutFeedback onPress={() => navigate('Overview', { mode: 'select' })}>
+                       <View><Text style={styles.headerText}>Edit</Text></View>
                      </TouchableWithoutFeedback>
                    </View>,
     };
   };
 
+  constructor(props) {
+    super(props);
+  
+    this.state = { shoppingList: [] };
+  }
+
+  componentDidMount() {
+    this.getShoppingListFromApiAsync()
+      .then((shoppingList) => {
+        shoppingList = shoppingList ? Object.entries(shoppingList) : [];
+        shoppingList.map((item, index) => item.key = index);
+        this.setState({
+          shoppingList: shoppingList,
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  getShoppingListFromApiAsync() {
+    return fetch(`http://souschef-182502.appspot.com/api/v1/users/shopping_list?user_id=${firebase.auth().currentUser.uid}`)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return responseJson;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
   render() {
-    let shoppingList = [
-      {
-        category: 'Produce',
-        items: [
-          {
-            name: 'Yellow Onions',
-            quantity: '3 large',
-          },
-          {
-            name: 'Roma Tomatoes',
-            quantity: '5 ct',
-          },
-          {
-            name: 'Spinach',
-            quantity: '1 bunch',
-          },
-          {
-            name: 'Sliced Bella Mushrooms',
-            quantity: '8 oz.',
-          },
-          {
-            name: 'Lemons',
-            quantity: '2 ct',
-          },
-          {
-            name: 'Cubano Chile Pepper',
-            quantity: '6 ct',
-          }
-        ]
-      },
-      {
-        category: 'Dairy',
-        items: [
-          {
-            name: 'Eggs',
-            quantity: '12 large',
-          },
-          {
-            name: 'Milk',
-            quantity: '0.5 gl.',
-          },
-          {
-            name: 'Parmesan Cheese, Grated',
-            quantity: '6 oz.',
-          },
-          {
-            name: 'Yogurt',
-            quantity: '1 qt',
-          }
-        ]
-      }
-    ];
-
     return (
-
       <View style={styles.container}>
         <Text style={styles.pageTitle}>Shopping List</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
-            {/*
-                <SectionList style={styles.ingridentsContainer}
-                renderItem={this.renderItem}
-                renderSectionHeader={this.renderHeader}
-                sections={[
-                    {data: [{name:'Milk', value:'2 gal'}, {name:'Cheese', value:'12'}], key:'Dairy'},
-                    {data: [{name:'Eggs', value:'2 gal'}], key:'Poultry'}
-                ]}
-                keyExtractor={(item) => item.name}
-            />
-            <FlatList style={styles.ingridentsContainer}
-              data={[[
-                  {data: [{name:'Milk', value:'2 gal'}, {name:'Cheese', value:'12'}], key:'Dairy'}],
-                  [{data: [{name:'Eggs', value:'2 gal'}], key:'Poultry'}]
-              ]}
-              renderItem={this.flatRenderItem}
-            />
-            */}
           <FlatList
-            data={shoppingList}
+            data={this.state.shoppingList}
+            extraData={this.state}
             renderItem={
-              ({item}) => 
-                <ShoppingCategoryCard category={item.category} items={item.items} />
+              ({item, index}) => <ShoppingCategoryCard key={index}
+                                                  category={item[0]}
+                                                     items={Object.entries(item[1])} />
             }
-            keyExtractor={(item) => item.category}
           />
-
         </ScrollView>
       </View>
 

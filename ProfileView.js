@@ -5,7 +5,7 @@ import TagInput from './TagInput.js';
 
 export default class ProfileView extends View {
   static navigationOptions = ({ navigation }) => {
-    const {navigate, state, setParams} = navigation;
+    const {navigate, goBack, state, setParams} = navigation;
     const {params} = state;
     let leftHeader = null;
     let rightHeader = null;
@@ -13,7 +13,7 @@ export default class ProfileView extends View {
     if(params.mode !== 'onboarding') {
       leftHeader = (
         <View style={styles.headerActions}>
-          <TouchableWithoutFeedback onPress={() => navigate('Overview', {})}>
+          <TouchableWithoutFeedback onPress={() => goBack()}>
             <View><Text style={styles.headerText}>Back</Text></View>
           </TouchableWithoutFeedback>
         </View>
@@ -52,7 +52,6 @@ export default class ProfileView extends View {
   componentDidMount() {
       this.props.navigation.setParams({ onDone: this.updateDietaryPreferences.bind(this) });
       this.getMoviesFromApiAsync().then((plan) => {
-          console.log()
           var exclus = plan['exclusions'];
           var die = plan['diet'];
           this.setState({
@@ -78,7 +77,6 @@ export default class ProfileView extends View {
       var uid = firebase.auth().currentUser.uid;
       diet = this.state.diet;
       exclusions = this.state.tags.join();
-      console.log(diet, exclusions);
       if (this.state.diet = 'None') {
           diet = '';
       }
@@ -88,7 +86,6 @@ export default class ProfileView extends View {
 
       fetch('https://souschef-182502.appspot.com/api/v1/users/update_profile?user_id='+uid+'&diet='+diet+'&exclusions='+exclusions)
           .then(() => {
-              console.log(diet, exclusions);
               fetch('https://souschef-182502.appspot.com/api/v1/users/weekly_plan_create?user_id='+uid)
                   .then(() => {
                       this.props.navigation.navigate('Overview', {});

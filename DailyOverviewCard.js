@@ -1,11 +1,8 @@
 import React from 'react';
 import { StyleSheet, Dimensions, Text, View, ScrollView, FlatList, Image, TouchableHighlight } from 'react-native';
-import CheckBox from 'react-native-check-box';
+import Checkbox from './Checkbox.js';
 import placeholderImg from './images/placeholder.png';
 import chevronRight from './images/chevron-right.png';
-import omelette from './images/omelette.png';
-import chickenParm from './images/chicken-parmigiana.png';
-import cod from './images/cod.png';
 
 export default class DailyOverviewCard extends View {
 
@@ -17,11 +14,18 @@ export default class DailyOverviewCard extends View {
     };
   }
 
+  selectRecipe(index, recipeId) {
+    this.props.onSelect(index, recipeId);
+  }
+
   render() {
     const {navigate, state} = this.props.navigation;
     const breakfast = this.props.recipes.Breakfast;
     const lunch = this.props.recipes.Lunch;
     const dinner = this.props.recipes.Dinner;
+    const selectBreakfast = this.selectRecipe.bind(this, this.props.day*3+0, breakfast.ID)
+    const selectLunch = this.selectRecipe.bind(this, this.props.day*3+1, lunch.ID)
+    const selectDinner = this.selectRecipe.bind(this, this.props.day*3+2, dinner.ID)
 
     return (
       <View style={styles['DailyOverviewCard']}>
@@ -32,21 +36,17 @@ export default class DailyOverviewCard extends View {
 
           <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                       underlayColor="rgba(0,0,0,0.08)"
-                            onPress={() => {
-                              if(this.state.isSelecting) {
-                                this.props.onSelect(this.props.day*3+0, breakfast.ID);
-                              } else {
-                                navigate('Recipe', {
-                                  recipeId: breakfast.ID,
-                                  day: this.props.day,
-                                  meal: 'Breakfast',
-                                  isRecipeChange: false,
-                                });
-                              }
+                            onPress={this.state.isSelecting ? selectBreakfast : () => {
+                              navigate('Recipe', {
+                                recipeId: breakfast.ID,
+                                day: this.props.day,
+                                meal: 'Breakfast',
+                                isRecipeChange: false,
+                              });
                             }}>
             <View style={styles['DailyOverviewCard__recipe']}>
-              { this.state.isSelecting && <CheckBox style={styles['DailyOverviewCard__recipeCheckbox']} itemStyle={{color: 'white'}} onClick={() => {}} /> }
-              { !this.state.isSelecting && <Image source={{uri: breakfast.Image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} /> }
+              { this.state.isSelecting && <Checkbox selected={this.props.selections[0] === breakfast.ID} onToggle={selectBreakfast} /> }
+              { !this.state.isSelecting && <Image source={breakfast.Image ? {uri: breakfast.Image} : placeholderImg} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} /> }
               <View style={[styles['DailyOverviewCard__recipeText'], this.state.isSelecting ? { width: Dimensions.get('window').width - 200 } : {}]}>
                 <Text style={styles['DailyOverviewCard__recipeMeal']}>
                   Breakfast
@@ -61,21 +61,17 @@ export default class DailyOverviewCard extends View {
 
           <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                       underlayColor="rgba(0,0,0,0.08)"
-                            onPress={() => {
-                              if(this.state.isSelecting) {
-                                this.props.onSelect(this.props.day*3+1, lunch.ID);
-                              } else {
-                                navigate('Recipe', {
-                                  recipeId: lunch.ID,
-                                  day: this.props.day,
-                                  meal: 'Lunch',
-                                  isRecipeChange: false,
-                                });
-                              }
+                            onPress={this.state.isSelecting ? selectLunch : () => {
+                              navigate('Recipe', {
+                                recipeId: lunch.ID,
+                                day: this.props.day,
+                                meal: 'Lunch',
+                                isRecipeChange: false,
+                              });
                             }}>
             <View style={styles['DailyOverviewCard__recipe']}>
-              { this.state.isSelecting && <CheckBox style={styles['DailyOverviewCard__recipeCheckbox']} itemStyle={{color: 'white'}} onClick={() => {}} /> }
-              { !this.state.isSelecting && <Image source={{uri: lunch.Image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} /> }
+              { this.state.isSelecting && <Checkbox selected={this.props.selections[1] === lunch.ID} onToggle={selectLunch} /> }
+              { !this.state.isSelecting && <Image source={lunch.Image ? {uri: lunch.Image} : placeholderImg} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} /> }
               <View style={[styles['DailyOverviewCard__recipeText'], this.state.isSelecting ? { width: Dimensions.get('window').width - 200 } : {}]}>
                 <Text style={styles['DailyOverviewCard__recipeMeal']}>
                   Lunch
@@ -90,21 +86,17 @@ export default class DailyOverviewCard extends View {
 
           <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                       underlayColor="rgba(0,0,0,0.08)"
-                            onPress={() => {
-                              if(this.state.isSelecting) {
-                                this.props.onSelect(this.props.day*3+2, dinner.ID);
-                              } else {
-                                navigate('Recipe', {
-                                  recipeId: dinner.ID,
-                                  day: this.props.day,
-                                  meal: 'Dinner',
-                                  isRecipeChange: false,
-                                });
-                              }
+                            onPress={this.state.isSelecting ? selectDinner : () => {
+                              navigate('Recipe', {
+                                recipeId: dinner.ID,
+                                day: this.props.day,
+                                meal: 'Dinner',
+                                isRecipeChange: false,
+                              });
                             }}>
             <View style={[styles['DailyOverviewCard__recipe'],styles['DailyOverviewCard__recipe--bottom']]}>
-              { this.state.isSelecting && <CheckBox style={styles['DailyOverviewCard__recipeCheckbox']} itemStyle={{color: 'white'}} onClick={() => {}} /> }
-              { !this.state.isSelecting && <Image source={{uri: dinner.Image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} /> }
+              { this.state.isSelecting && <Checkbox selected={this.props.selections[2] === dinner.ID} onToggle={selectDinner} /> }
+              { !this.state.isSelecting && <Image source={dinner.Image ? {uri: dinner.Image} : placeholderImg} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} /> }
               <View style={[styles['DailyOverviewCard__recipeText'], this.state.isSelecting ? { width: Dimensions.get('window').width - 200 } : {}]}>
                 <Text style={styles['DailyOverviewCard__recipeMeal']}>
                   Dinner
@@ -171,11 +163,6 @@ const styles = StyleSheet.create({
   },
   'DailyOverviewCard__recipe--bottom': {
     borderBottomWidth: 0,
-  },
-  'DailyOverviewCard__recipeCheckbox': {
-    width: 20,
-    height: 20,
-    margin: 10,
   },
   'DailyOverviewCard__recipeImage': {
     height: 40,

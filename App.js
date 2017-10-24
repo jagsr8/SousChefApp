@@ -82,7 +82,4 @@ export const SimpleApp = StackNavigator({
   ChangeRecipe: {screen: ChangeRecipeView},
 }, {
   headerMode: 'screen',
-  navigationOptions: {
-    gesturesEnabled: false,
-  },
 });

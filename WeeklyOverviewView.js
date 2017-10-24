@@ -7,7 +7,7 @@ import shoppingCart from './images/shopping-cart.png';
 
 export default class WeeklyOverviewView extends View {
   static navigationOptions = ({ navigation }) => {
-    const {navigate, state, setParams} = navigation;
+    const {navigate, goBack, state, setParams} = navigation;
     const {params} = state;
     let leftHeader = null;
     let rightHeader = null;
@@ -15,14 +15,14 @@ export default class WeeklyOverviewView extends View {
     if(params.mode === 'select') {
       leftHeader = (
         <View style={styles.headerActions}>
-          <TouchableWithoutFeedback onPress={() => navigate('List', {})}>
+          <TouchableWithoutFeedback onPress={() => goBack()}>
             <View><Text style={styles.headerText}>Cancel</Text></View>
           </TouchableWithoutFeedback>
         </View>
       )
       rightHeader = (
         <View style={styles.headerActions}>
-          <TouchableWithoutFeedback onPress={() => navigate('List', {})}>
+          <TouchableWithoutFeedback onPress={params.onSubmit}>
             <View><Text style={[styles.headerText,styles.headerTextBold]}>Done</Text></View>
           </TouchableWithoutFeedback>
         </View>
@@ -33,7 +33,7 @@ export default class WeeklyOverviewView extends View {
           <TouchableWithoutFeedback onPress={() => navigate('Profile', {})}>
             <Image source={profileIcon} style={styles.headerImage} />
           </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={() => navigate('Overview', {mode: 'select'})}>
+          <TouchableWithoutFeedback onPress={() => navigate('List', {})}>
             <Image source={shoppingCart} style={styles.headerImage} />
           </TouchableWithoutFeedback>
         </View>
@@ -47,6 +47,7 @@ export default class WeeklyOverviewView extends View {
       headerTitleStyle: styles.headerTitle,
       headerLeft: leftHeader,
       headerRight: rightHeader,
+      gesturesEnabled: params.mode === 'select',
     };
   };
 
@@ -55,12 +56,11 @@ export default class WeeklyOverviewView extends View {
 
     const {params} = this.props.navigation.state;
 
-    this.selectedRecipes = [];
-
     this.state = {
       weeklyPlan: [],
       isSelecting: params.mode && params.mode === 'select',
       loading: true,
+      selectedRecipes: [],
     };
 
   }
@@ -77,11 +77,10 @@ export default class WeeklyOverviewView extends View {
       .catch((error) => {
         console.error(error);
       });
-    this.props.navigation.setParams({ onSelectMode: this.setState.bind(this) });
+    this.props.navigation.setParams({ onSubmit: this.submitSelection.bind(this) });
   }
 
   getWeeklyPlanFromApiAsync() {
-    console.log(`http://souschef-182502.appspot.com/api/v1/users/weekly_plan?user_id=${firebase.auth().currentUser.uid}`);
     return fetch(`http://souschef-182502.appspot.com/api/v1/users/weekly_plan?user_id=${firebase.auth().currentUser.uid}`)
       .then((response) => response.json())
       .then((responseJson) => {
@@ -93,42 +92,59 @@ export default class WeeklyOverviewView extends View {
   }
 
   selectRecipe(index, recipeId) {
-    this.selectedRecipes[index] = this.selectedRecipes[index] === recipeId ? null : recipeId;
-    console.log(this.selectedRecipes);
+    let selections = this.state.selectedRecipes;
+    selections[index] = selections[index] === recipeId ? -1 : recipeId;
+    this.setState({
+      selectedRecipes: selections,
+    });
   }
 
   renderWeeklyorSpinner() {
-      if (this.state.loading) {
-          return <View style={styles['WeeklyOverview']}>
-                <ActivityIndicator color='#FFFFFF' size='large' />
-          </View>
-      }
-      return <View style={styles['WeeklyOverview']}>
-        <Text style={styles['WeeklyOverview__title']}>Recipes This Week</Text>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <FlatList
-            data={this.state.weeklyPlan}
-            renderItem={
-              ({item, index}) =>
-                <DailyOverviewCard key={index}
-                                   day={index}
-                               recipes={item}
-                            navigation={this.props.navigation}
-                           isSelecting={this.state.isSelecting}
-                              onSelect={this.selectRecipe.bind(this)} />
-            }
-          />
-        </ScrollView>
-      </View>;
+    if (this.state.loading) {
+        return <View style={styles['WeeklyOverview']}>
+              <ActivityIndicator color='#FFFFFF' size='large' />
+        </View>
+    }
+    return <View style={styles['WeeklyOverview']}>
+      <Text style={styles['WeeklyOverview__title']}>{this.state.isSelecting ? 'Select Recipes' : 'Recipes This Week'}</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <FlatList
+          data={this.state.weeklyPlan}
+          extraData={this.state}
+          renderItem={
+            ({item, index}) =>
+              <DailyOverviewCard key={index}
+                                 day={index}
+                             recipes={item}
+                          navigation={this.props.navigation}
+                         isSelecting={this.state.isSelecting}
+                            onSelect={this.selectRecipe.bind(this)}
+                          selections={this.state.selectedRecipes.slice(index*3, index*3+3)} />
+          }
+        />
+      </ScrollView>
+    </View>;
+  }
+
+  submitSelection() {
+    let selections = this.state.selectedRecipes.filter((recipeId) => recipeId && recipeId >= 0).join();
+    fetch(`http://souschef-182502.appspot.com/api/v1/users/shopping_list_create?user_id=${firebase.auth().currentUser.uid}&recipe_ids=${selections}`)
+      .then(() => {
+        this.props.navigation.navigate('List', {});
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   render() {
     return (
       <View style={styles['WeeklyOverview']}>
-        <Text style={styles['WeeklyOverview__title']}>Recipes This Week</Text>
+        <Text style={styles['WeeklyOverview__title']}>{this.state.isSelecting ? 'Select Recipes' : 'Recipes This Week'}</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
           <FlatList
             data={this.state.weeklyPlan}
+            extraData={this.state}
             renderItem={
               ({item, index}) =>
                 <DailyOverviewCard key={index}
@@ -136,7 +152,8 @@ export default class WeeklyOverviewView extends View {
                                recipes={item}
                             navigation={this.props.navigation}
                            isSelecting={this.state.isSelecting}
-                              onSelect={this.selectRecipe.bind(this)} />
+                              onSelect={this.selectRecipe.bind(this)}
+                            selections={this.state.selectedRecipes.slice(index*3, index*3+3)} />
             }
           />
         </ScrollView>
@@ -154,8 +171,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     marginTop: 5,
-    marginLeft: 20,
-    marginRight: 20,
+    marginHorizontal: 20,
   },
   headerImage: {
     height: 30,
