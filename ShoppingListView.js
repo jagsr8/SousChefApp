@@ -69,7 +69,7 @@ export default class ShoppingListView extends React.Component {
 
   constructor(props) {
     super(props);
-  
+
     this.state = { shoppingList: [] };
   }
 

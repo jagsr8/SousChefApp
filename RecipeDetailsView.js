@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar} from 'react-native';
+import { AppRegistry, ActivityIndicator, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import firebase from 'firebase';
 const win = Dimensions.get('window');
@@ -30,6 +30,15 @@ const styles = StyleSheet.create({
     left: 20,
     paddingRight: 20,
   },
+  activity: {
+    flex: 1,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 40,
+    backgroundColor: '#07988D',
+    alignItems: 'center',
+    justifyContent: 'center',
+    },
   horizontalView: {
     flexDirection:'row',
     alignItems:'center',
@@ -119,7 +128,7 @@ const styles = StyleSheet.create({
   try {
     extendedIngredients = responseJson.extendedIngredients;
     ingredientsJSON = []
-    for (i = 0; i < extendedIngredients.length; i++) { 
+    for (i = 0; i < extendedIngredients.length; i++) {
       ingredientsJSON.push({
         key: i,
         name: extendedIngredients[i].name,
@@ -136,7 +145,7 @@ const styles = StyleSheet.create({
   try {
     analyzedInstructions = responseJson.analyzedInstructions[0].steps;
     instructionsJSON = [];
-    for (i = 0; i < analyzedInstructions.length; i++) { 
+    for (i = 0; i < analyzedInstructions.length; i++) {
       instructionsJSON.push({
         key: analyzedInstructions[i].number + ". " + analyzedInstructions[i].step,
       })
@@ -146,7 +155,7 @@ const styles = StyleSheet.create({
     return [];
   }
 
-   
+
   }
 
 function changeRecipeClicked(navigate) {
@@ -190,7 +199,7 @@ class RecipeDetailsView extends React.Component {
     }
   }
 
-  
+
 
   componentDidMount() {
     return fetch(`https://souschef-182502.appspot.com/api/v1/recipes/recipe_details?recipe_id=${this.props.navigation.state.params.recipeId}`)
@@ -214,13 +223,11 @@ class RecipeDetailsView extends React.Component {
 
   render() {
     if (this.state.isLoading) {
-      return (
-        <View style={{flex: 1, paddingTop: 20}}>
-        <Text>
-          Loading...
-        </Text>
-        </View>
-      );
+        return (
+                  <View style={styles.activity}>
+                    <ActivityIndicator color='#FFFFFF' size='large' />
+                 </View>
+        );
     }
     return (
       <View style={styles.container}>
@@ -244,10 +251,10 @@ class RecipeDetailsView extends React.Component {
           } min
           </Text>
           <Text style = {styles.textOnHorizontalView}>
-            
+
           </Text>
           <Text style = {styles.textOnHorizontalView}>
-            
+
           </Text>
           <Text style = {styles.textOnHorizontalView}>
             {this.state.dataSource.diet}

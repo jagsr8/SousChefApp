@@ -54,6 +54,9 @@ export default class ProfileView extends View {
       this.getMoviesFromApiAsync().then((plan) => {
           var exclus = plan['exclusions'];
           var die = plan['diet'];
+          if ((plan['exclusions'].length == 1 && plan['exclusions'][0] == "")) {
+             plan['exclusions'].pop()
+          }
           this.setState({
               tags: plan['exclusions'],
               diet: die,
@@ -118,6 +121,18 @@ export default class ProfileView extends View {
       }
   }
 
+  renderTags() {
+      return (<TagInput
+           tagContainerStyle={styles.tagStyle}
+           value={this.state.tags}
+           onChange={(tags) => this.setState({tags})}
+           labelExtractor={(tag) => tag}
+           text={''}
+           onChangeText={()=>{}}
+           tagColor={'#06988D'}
+         />);
+  }
+
   renderProfileOrSpinner() {
       if (this.state.loading) {
           return <View style={styles.activity}>
@@ -158,15 +173,7 @@ export default class ProfileView extends View {
               Dietary Exclusions
             </Text>
             <Text style={styles.selectionSubtitle}>Select all applicable exclusions.</Text>
-            <TagInput
-                 tagContainerStyle={styles.tagStyle}
-                 value={this.state.tags}
-                 onChange={(tags) => this.setState({tags})}
-                 labelExtractor={(tag) => tag}
-                 text={''}
-                 onChangeText={()=>{}}
-                 tagColor={'#06988D'}
-               />
+            {this.renderTags()}
             <View style={styles.tagInputContainer}>
                 <TextInput
                   placeholder='Exclusions'

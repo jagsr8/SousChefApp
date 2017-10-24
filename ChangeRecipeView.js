@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar, TouchableHighlight} from 'react-native';
+import { AppRegistry, ActivityIndicator,StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar, TouchableHighlight} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 const win = Dimensions.get('window');
 import firebase from 'firebase';
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginLeft: 10,
     marginTop: 50,
-    marginBottom: 20, 
+    marginBottom: 20,
     backgroundColor: 'rgba(0,0,0,0)',
     color: 'white',
   },
@@ -94,7 +94,16 @@ const styles = StyleSheet.create({
     marginRight: 30,
     marginTop: 5,
     marginBottom: 5,
-  }, 
+  },
+  activity: {
+    flex: 1,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 40,
+    backgroundColor: '#07988D',
+    alignItems: 'center',
+    justifyContent: 'center',
+    },
   'DailyOverviewCard': {
     flex: 1,
     flexDirection: 'row',
@@ -196,7 +205,7 @@ const styles = StyleSheet.create({
  function getIngredients(responseJson) {
     extendedIngredients = responseJson.extendedIngredients;
     ingredientsJSON = []
-    for (i = 0; i < extendedIngredients.length; i++) { 
+    for (i = 0; i < extendedIngredients.length; i++) {
       ingredientsJSON.push({
         key: extendedIngredients[i].name,
         value: extendedIngredients[i].amount + " " + extendedIngredients[i].unitShort
@@ -209,7 +218,7 @@ const styles = StyleSheet.create({
     analyzedInstructions = responseJson.analyzedInstructions[0].steps;
     console.log(analyzedInstructions);
     instructionsJSON = []
-    for (i = 0; i < analyzedInstructions.length; i++) { 
+    for (i = 0; i < analyzedInstructions.length; i++) {
       instructionsJSON.push({
         key: analyzedInstructions[i].number + ". " + analyzedInstructions[i].step,
       })
@@ -238,14 +247,14 @@ class ChangeRecipeView extends React.Component {
     }
   }
 
-  
+
 
   componentDidMount() {
     return fetch(`https://souschef-182502.appspot.com/api/v1/recipes/recipe_changes?user_id=${firebase.auth().currentUser.uid}&offset=0&meal_type=${this.props.navigation.state.params.meal.toLowerCase()}`)
       .then((response) => response.json())
       .then((responseJson) => {
         //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        for (i = 0; i < responseJson.results.length; i++) { 
+        for (i = 0; i < responseJson.results.length; i++) {
           responseJson.results[i]["key"] = i;
         }
 
@@ -265,11 +274,9 @@ class ChangeRecipeView extends React.Component {
     const navigate = this.props.navigate;
     if (this.state.isLoading) {
       return (
-        <View style={{flex: 1, paddingTop: 20}}>
-        <Text>
-          Loading...
-        </Text>
-        </View>
+                <View style={styles.activity}>
+                  <ActivityIndicator color='#FFFFFF' size='large' />
+               </View>
       );
     }
     return (
@@ -282,7 +289,7 @@ class ChangeRecipeView extends React.Component {
           <FlatList
             data={this.state.dataSource.results}
             renderItem={
-              ({item, index}) => 
+              ({item, index}) =>
                  <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                         underlayColor="rgba(0,0,0,0.08)"
                               onPress={() => {
@@ -309,7 +316,7 @@ class ChangeRecipeView extends React.Component {
             }
           />
         </ScrollView>
-          
+
       </View>
 
     );
