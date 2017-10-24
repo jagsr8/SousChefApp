@@ -41,7 +41,7 @@ export default class ProfileView extends View {
     super(props);
 
     this.state = {
-        diet: "none",
+        diet: "None",
         loading: false,
         tags: [],
         exc: '',
@@ -75,16 +75,23 @@ export default class ProfileView extends View {
   updateDietaryPreferences() {
       this.setState({ error: '', loading: true });
       var uid = firebase.auth().currentUser.uid;
+      var call = 'https://souschef-182502.appspot.com/api/v1/users/update_profile?user_id='+uid;
       diet = this.state.diet;
       exclusions = this.state.tags.join();
-      if (this.state.diet = 'None') {
-          diet = '';
-      }
-      if (exclusions || exclusions == 'None') {
-          exclusions = '';
+      if ((this.state.diet == 'None') && (exclusions == '' || exclusions == 'None')) {
+           this.props.navigation.navigate('Overview', {});
+           return;
       }
 
-      fetch('https://souschef-182502.appspot.com/api/v1/users/update_profile?user_id='+uid+'&diet='+diet+'&exclusions='+exclusions)
+      if ((this.state.diet == 'None')) {
+          diet = '';
+      }
+       call += '&diet='+diet;
+      if ((exclusions == '' || exclusions == 'None')) {
+          exclusions = '';
+      }
+      call += '&exclusions='+exclusions;
+      fetch(call)
           .then(() => {
               fetch('https://souschef-182502.appspot.com/api/v1/users/weekly_plan_create?user_id='+uid)
                   .then(() => {
@@ -93,7 +100,7 @@ export default class ProfileView extends View {
           })
           .catch((error) => {
               console.log(error);
-              this.setState({ error: 'Cannot create weekly view'})
+              this.setState({ error: 'Cannot create weekly view', loading: false})
           });
 
   }
@@ -119,19 +126,13 @@ export default class ProfileView extends View {
       }
       const { navigate, state } = this.props.navigation;
       let diets = [{
-        key: 'Vegetarian'
+        key: 'vegetarian'
       },
       {
-        key: 'Vegan'
+        key: 'glutenFree'
       },
       {
-        key: 'Paleo'
-      },
-      {
-        key: 'Ketogenic'
-      },
-      {
-        key: 'Gluten free'
+        key: 'dairyFree'
       }];
 
       return <KeyboardAvoidingView behavior='position' style={styles.profile}>
@@ -179,7 +180,7 @@ export default class ProfileView extends View {
                       onPress={() => {
                           this.addExclusion()
                       }}>
-                      <Text style={styles.buttonText}>Sign Up</Text>
+                      <Text style={styles.buttonText}>Add</Text>
                   </TouchableOpacity>
              </View>
 
