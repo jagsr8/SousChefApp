@@ -204,16 +204,16 @@ class TagInput<T> extends React.PureComponent<Props<T>, State> {
   }
 
   scrollToBottom = () => {
-    const y = this.contentHeight - this.scrollViewHeight;
-    if (y <= 0) {
-      return;
-    }
-    const scrollView = this.scrollView;
-    invariant(
-      scrollView,
-      "this.scrollView ref should exist before scrollToBottom called",
-    );
-    scrollView.scrollTo({ y, animated: true });
+    // const y = this.contentHeight - this.scrollViewHeight;
+    // if (y <= 0) {
+    //   return;
+    // }
+    // const scrollView = this.scrollView;
+    // invariant(
+    //   scrollView,
+    //   "this.scrollView ref should exist before scrollToBottom called",
+    // );
+    // scrollView.scrollTo({ y, animated: true });
   }
 
   render() {
@@ -386,6 +386,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-start',
+    marginHorizontal: 15,
+    justifyContent: 'center',
   },
   tagInputContainerScroll: {
     flex: 1,
@@ -396,20 +398,15 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     borderRadius: 2,
   },
-  textInputContainer: {
-    height: 0,
-    borderRadius: 2,
-  },
   tag: {
     borderRadius: 2,
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.15)',
   },
   tagText: {
     height: 24,
     borderRadius: 2,
+    paddingHorizontal: 8,
     color: '#FFF',
-    backgroundColor: 'rgba(0,0,0,0.15)',
   },
 });
 

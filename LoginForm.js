@@ -34,6 +34,13 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 15
     },
+    errorText: {
+        textAlign: 'center',
+        color: 'white',
+        fontWeight: '700',
+        fontSize: 15,
+        marginBottom:10
+    },
 });
 
 export default class LoginForm extends React.Component {
@@ -41,11 +48,12 @@ export default class LoginForm extends React.Component {
     state = {
         email: 'c@mail.com',
         password: 'aaaaaaaa',
-        loading: false
+        loading: false,
+        error: false,
     }
 
     login() {
-        this.setState({ error: '', loading: true });
+        this.setState({ error: false, loading: true });
         const { email, password } = this.state;
         firebase.auth().signInWithEmailAndPassword(email, password)
                     .then((userData) => {
@@ -54,7 +62,7 @@ export default class LoginForm extends React.Component {
                     })
                     .catch((error) => {
                         console.log(error)
-                        this.setState({ error: 'Authentication failed.', loading: false });
+                        this.setState({ error: true, loading: false });
             });
     }
 
@@ -68,10 +76,18 @@ export default class LoginForm extends React.Component {
         </TouchableOpacity>;
     }
 
+    renderErrorMessage() {
+        if (this.state.error) {
+            return <Text style={styles.errorText}> Authentication failed. </Text>;
+        }
+        return ;
+    }
+
   render() {
     const navigate = this.props.navigate;
     return (
       <View style={styles.container}>
+        {this.renderErrorMessage()}
         <TextInput
             placeholder='email'
             placeholderTextColor = 'rgba(255,255,255,0.4)'

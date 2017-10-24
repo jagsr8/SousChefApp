@@ -34,6 +34,13 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 15
     },
+    errorText: {
+        textAlign: 'center',
+        color: 'white',
+        fontWeight: '700',
+        fontSize: 15,
+        marginBottom:10
+    },
 });
 
 export default class SignUpForm extends React.Component {
@@ -41,23 +48,24 @@ export default class SignUpForm extends React.Component {
         email: '',
         password: '',
         name: '',
-        loading: false
+        loading: false,
+        error: false
     }
 
     signup() {
-        this.setState({ error: '', loading: true });
+        this.setState({ error: false, loading: true });
         const { email, password, name } = this.state;
         firebase.auth().createUserWithEmailAndPassword(email, password)
                     .then((userData) => {
-                        fetch('https://souschef-182502.appspot.com/api/v1/users/create_profile?user_id='+userData['uid']+'&name='+name)
+                        fetch('https://souschef-182502.appspot.com/api/v1/users/create_profile?user_id='+userData['uid']+'&name='+name+'&exclusions=None&diet=None')
                             .catch(() => {
-                                this.setState({ error: 'Authentication failed.', loading: false })
+                                this.setState({ error: true, loading: false })
                             });
-                        this.setState({ error: '', loading: false });
+                        this.setState({ error: false, loading: false });
                         this.props.navigate('Profile', {mode: 'onboarding'});
                     })
                     .catch(() => {
-                        this.setState({ error: 'Authentication failed.', loading: false });
+                        this.setState({ error: true, loading: false });
             });
     }
 
@@ -71,10 +79,18 @@ export default class SignUpForm extends React.Component {
         </TouchableOpacity>;
     }
 
+    renderErrorMessage() {
+        if (this.state.error) {
+            return <Text style={styles.errorText}> Sign up failed. </Text>;
+        }
+        return ;
+    }
+
   render() {
     const navigate = this.props.navigate;
     return (
       <View style={styles.container}>
+        {this.renderErrorMessage()}
         <TextInput
           placeholder='Name'
           placeholderTextColor = 'rgba(255,255,255,0.4)'

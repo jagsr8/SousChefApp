@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Dimensions, ActivityIndicator, Text, View, ScrollView, FlatList, Picker, TouchableWithoutFeedback, TouchableHighlight, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Dimensions, ActivityIndicator, Text, View, ScrollView, FlatList, Picker, TouchableWithoutFeedback, TouchableHighlight, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native';
 import firebase from 'firebase';
 import TagInput from './TagInput.js';
 
@@ -76,9 +76,19 @@ export default class ProfileView extends View {
   updateDietaryPreferences() {
       this.setState({ error: '', loading: true });
       var uid = firebase.auth().currentUser.uid;
-      console.log(this.state.diet);
-      fetch('https://souschef-182502.appspot.com/api/v1/users/update_profile?user_id='+uid+'&diet='+this.state.diet+'&exclusions='+this.state.tags.join())
+      diet = this.state.diet;
+      exclusions = this.state.tags.join();
+      console.log(diet, exclusions);
+      if (this.state.diet = 'None') {
+          diet = '';
+      }
+      if (exclusions || exclusions == 'None') {
+          exclusions = '';
+      }
+
+      fetch('https://souschef-182502.appspot.com/api/v1/users/update_profile?user_id='+uid+'&diet='+diet+'&exclusions='+exclusions)
           .then(() => {
+              console.log(diet, exclusions);
               fetch('https://souschef-182502.appspot.com/api/v1/users/weekly_plan_create?user_id='+uid)
                   .then(() => {
                       this.props.navigation.navigate('Overview', {});
@@ -127,7 +137,7 @@ export default class ProfileView extends View {
         key: 'Gluten free'
       }];
 
-      return <View style={styles.profile}>
+      return <KeyboardAvoidingView behavior='position' style={styles.profile}>
         <Text style={styles.profileTitle}>Profile</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.selectionContainer}>
@@ -178,7 +188,7 @@ export default class ProfileView extends View {
 
           </View>
         </ScrollView>
-      </View>;
+      </KeyboardAvoidingView>;
   }
 
   render() {
