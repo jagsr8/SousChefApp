@@ -121,7 +121,8 @@ const styles = StyleSheet.create({
     ingredientsJSON = []
     for (i = 0; i < extendedIngredients.length; i++) { 
       ingredientsJSON.push({
-        key: extendedIngredients[i].name,
+        key: i,
+        name: extendedIngredients[i].name,
         value: extendedIngredients[i].amount + " " + extendedIngredients[i].unitShort
       })
     }
@@ -157,14 +158,13 @@ function changeRecipeClicked(navigate) {
                               });
     } else {
 
-      console.log("cool");
       changeRecipe(navigate);
     }
 
 }
 
 async function changeRecipe(navigate) {
-  return fetch(`https://souschef-182502.appspot.com/api/v1/users/update_meal?user_id=1&day=${navigate.state.params.day}&meal=${navigate.state.params.meal}&recipe_id=${navigate.state.params.recipeId}`)
+  return fetch(`https://souschef-182502.appspot.com/api/v1/users/update_meal?user_id=${firebase.auth().currentUser.uid}&day=${navigate.state.params.day}&meal=${navigate.state.params.meal}&recipe_id=${navigate.state.params.recipeId}`)
     .then((responseJson) => {
       navigate.navigate("Overview", {});
     })
@@ -185,7 +185,6 @@ class RecipeDetailsView extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log(this.setParams);
     this.state = {
       isLoading: true
     }
@@ -264,7 +263,7 @@ class RecipeDetailsView extends React.Component {
           renderItem={
             ({item}) =>
               <View style={styles.ingridentsList}>
-                <Text style = {styles.textOnHorizontalView}>{item.key}</Text>
+                <Text style = {styles.textOnHorizontalView}>{item.name}</Text>
                 <Text style = {styles.textOnHorizontalView}>{item.value}</Text>
               </View>
           }

@@ -65,15 +65,7 @@ var TagInput = (_temp2 = _class = function (_React$PureComponent) {
       var tags = [].concat(babelHelpers.toConsumableArray(_this.props.value));
       tags.splice(index, 1);
       _this.props.onChange(tags);
-    }, _this.scrollToBottom = function () {
-      var y = _this.contentHeight - _this.scrollViewHeight;
-      if (y <= 0) {
-        return;
-      }
-      var scrollView = _this.scrollView;
-      (0, _invariant2.default)(scrollView, "this.scrollView ref should exist before scrollToBottom called");
-      scrollView.scrollTo({ y: y, animated: true });
-    }, _this.tagInputRef = function (tagInput) {
+    }, _this.scrollToBottom = function () {}, _this.tagInputRef = function (tagInput) {
       (0, _invariant2.default)(typeof tagInput === "object", "TextInput ref is object");
       _this.tagInput = tagInput;
     }, _this.scrollViewRef = function (scrollView) {
@@ -302,7 +294,9 @@ var styles = _reactNative.StyleSheet.create({
   wrapper: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    marginHorizontal: 15,
+    justifyContent: 'center'
   },
   tagInputContainerScroll: {
     flex: 1
@@ -313,20 +307,15 @@ var styles = _reactNative.StyleSheet.create({
     flexWrap: 'wrap',
     borderRadius: 2
   },
-  textInputContainer: {
-    height: 0,
-    borderRadius: 2
-  },
   tag: {
     borderRadius: 2,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.15)'
+    justifyContent: 'center'
   },
   tagText: {
     height: 24,
     borderRadius: 2,
-    color: '#FFF',
-    backgroundColor: 'rgba(0,0,0,0.15)'
+    paddingHorizontal: 8,
+    color: '#FFF'
   }
 });
 

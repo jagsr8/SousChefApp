@@ -236,20 +236,18 @@ class ChangeRecipeView extends React.Component {
     this.state = {
       isLoading: true
     }
-    console.log(this.props);
   }
 
   
 
   componentDidMount() {
-    return fetch(`https://souschef-182502.appspot.com/api/v1/recipes/recipe_changes?user_id=1&offset=0&meal_type=${this.props.navigation.state.params.meal.toLowerCase()}`)
+    return fetch(`https://souschef-182502.appspot.com/api/v1/recipes/recipe_changes?user_id=${firebase.auth().currentUser.uid}&offset=0&meal_type=${this.props.navigation.state.params.meal.toLowerCase()}`)
       .then((response) => response.json())
       .then((responseJson) => {
         //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         for (i = 0; i < responseJson.results.length; i++) { 
           responseJson.results[i]["key"] = i;
         }
-        console.log(responseJson);
 
         this.setState({
           isLoading: false,
