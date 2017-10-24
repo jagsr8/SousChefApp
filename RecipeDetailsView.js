@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar} from 'react-native';
 import { StackNavigator } from 'react-navigation';
+import firebase from 'firebase';
 const win = Dimensions.get('window');
 
 const styles = StyleSheet.create({
@@ -14,15 +15,20 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: win.width,
     height: 200,
+    opacity: 0.6,
+  },
+  imageContainer: {
+      backgroundColor: 'rgba(0,0,0,1)'
   },
   text: {
-    fontSize: 30,
+    fontSize: 25,
     textAlign: 'center',
     backgroundColor: 'rgba(0,0,0,0)',
     color: 'white',
     position: "absolute",
-    top: 150,
+    top: 100,
     left: 20,
+    paddingRight: 20,
   },
   horizontalView: {
     flexDirection:'row',
@@ -89,16 +95,82 @@ const styles = StyleSheet.create({
   }
 });
 
-export function getMoviesFromApiAsync() {
-      return fetch('https://souschef-182502.appspot.com/api/v1/users/weekly_plan?user_id=1')
-        .then((response) => response.json())
-        .then((responseJson) => {
-          console.log(responseJson.name);
-          return String(responseJson.name[0]);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+ function getDiet(responseJson) {
+    diet = ""
+    if (responseJson.vegan) {
+      diet += "Vegan ";
+    }
+    if (responseJson.vegetarian) {
+      diet += "Vegetarian ";
+    }
+    if (responseJson.ketogenic) {
+      diet += "Keto ";
+    }
+    if (responseJson.glutenFree) {
+      diet += "Gluten Free ";
+    }
+    if (responseJson.lowFodmap) {
+      diet += "Low Fodmap ";
+    }
+    return diet;
+}
+
+ function getIngredients(responseJson) {
+  try {
+    extendedIngredients = responseJson.extendedIngredients;
+    ingredientsJSON = []
+    for (i = 0; i < extendedIngredients.length; i++) { 
+      ingredientsJSON.push({
+        key: extendedIngredients[i].name,
+        value: extendedIngredients[i].amount + " " + extendedIngredients[i].unitShort
+      })
+    }
+    return ingredientsJSON;
+  } catch (e) {
+    return [];
+  }
+  }
+
+ function getDirections(responseJson) {
+  try {
+    analyzedInstructions = responseJson.analyzedInstructions[0].steps;
+    instructionsJSON = [];
+    for (i = 0; i < analyzedInstructions.length; i++) { 
+      instructionsJSON.push({
+        key: analyzedInstructions[i].number + ". " + analyzedInstructions[i].step,
+      })
+    }
+    return instructionsJSON;
+  } catch (e) {
+    return [];
+  }
+
+   
+  }
+
+function changeRecipeClicked(navigate) {
+  if (!navigate.state.params.isRecipeChange) {
+      navigate.navigate("ChangeRecipe", {
+                                recipeId: navigate.state.params.recipeId,
+                                day: navigate.state.params.day,
+                                meal: navigate.state.params.meal,
+                              });
+    } else {
+
+      console.log("cool");
+      changeRecipe(navigate);
+    }
+
+}
+
+async function changeRecipe(navigate) {
+  return fetch(`https://souschef-182502.appspot.com/api/v1/users/update_meal?user_id=1&day=${navigate.state.params.day}&meal=${navigate.state.params.meal}&recipe_id=${navigate.state.params.recipeId}`)
+    .then((responseJson) => {
+      navigate.navigate("Overview", {});
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
 class RecipeDetailsView extends React.Component {
@@ -114,74 +186,81 @@ class RecipeDetailsView extends React.Component {
 
   constructor(props) {
     super(props);
+    console.log(this.setParams);
     this.state = {
       isLoading: true
     }
   }
 
+  
 
-  // componentDidMount() {
-  //   return fetch('https://souschef-182502.appspot.com/api/v1/users/weekly_plan?user_id=1')
-  //     .then((response) => response.json())
-  //     .then((responseJson) => {
-  //       //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-  //       this.setState({
-  //         isLoading: false,
-  //         dataSource: (responseJson.diet),
-  //       }, function() {
-  //         // do something with new state
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // }
+  componentDidMount() {
+    return fetch(`https://souschef-182502.appspot.com/api/v1/recipes/recipe_details?recipe_id=${this.props.navigation.state.params.recipeId}`)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        responseJson["diet"] = getDiet(responseJson);
+        responseJson["ingredients"] = getIngredients(responseJson);
+        responseJson["directions"] = getDirections(responseJson);
+        this.setState({
+          isLoading: false,
+          dataSource: (responseJson),
+        }, function() {
+          // do something with new state
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   render() {
-    // if (this.state.isLoading) {
-    //   return (
-    //     <View style={{flex: 1, paddingTop: 20}}>
-    //     <Text>
-    //       Loading...
-    //     </Text>
-    //     </View>
-    //   );
-    // }
-    // console.log(this.state.dataSource)
+    if (this.state.isLoading) {
+      return (
+        <View style={{flex: 1, paddingTop: 20}}>
+        <Text>
+          Loading...
+        </Text>
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
         <ScrollView>
-        <Image
-        style={styles.image}
-        resizeMode={'cover'}   /* <= changed  */
-        source={{uri: 'https://www.incredibleegg.org/wp-content/uploads/basic-french-omelet-930x550.jpg'}}
-        />
+        <View style={styles.imageContainer}>
+          <Image
+          style={styles.image}
+          resizeMode={'cover'}   /* <= changed  */
+          source={{uri: this.state.dataSource.image}}
+          />
+        </View>
 
         <Text
         style= {styles.text}>
-        French Omelette
+        {this.state.dataSource.title}
         </Text>
         <View style={styles.horizontalView}>
           <Text style = {styles.textOnHorizontalView}>
-            30 min
+          {
+            this.state.dataSource.readyInMinutes
+          } min
           </Text>
           <Text style = {styles.textOnHorizontalView}>
-            $3.50
+            
           </Text>
           <Text style = {styles.textOnHorizontalView}>
-            430 cal
+            
           </Text>
           <Text style = {styles.textOnHorizontalView}>
-            Vegetarian
+            {this.state.dataSource.diet}
           </Text>
         </View>
-
 
         <Text style = {styles.headerText}>
             Ingredients
         </Text>
         <FlatList style={styles.ingridentsContainer}
-          data={[{key: 'Eggs', value: '3 large'}, {key: 'Spinach', value: '3 oz'}, {key: 'Yellow Onions', value: '0.5 large'}]}
+          data={this.state.dataSource.ingredients}
 
           renderItem={
             ({item}) =>
@@ -196,16 +275,12 @@ class RecipeDetailsView extends React.Component {
             Directions
         </Text>
         <FlatList style={styles.directionsContainer}
-          data={[{key: '1. Beat eggs, water, salt and pepper in small bowl until blended.'},
-          {key: '2. Heat butter in 7 to 10-inch nonstick omelet pan or skillet over medium-high heat until hot. Pour in egg mixture.'},
-          {key: '3. Gently push cooked portions from edges toward the center with inverted turner so that uncooked eggs can reach the hot pan surface.'},
-          {key: '4. When top surface of eggs is thickened and no visible liquid egg remains, place cut up onion and spinach on one side of the omelet. Fold omelet in half with turner. Serve immediately.'}]}
+          data={this.state.dataSource.directions}
 
           renderItem={
             ({item}) =>
               <View style={styles.ingridentsList}>
                 <Text style = {styles.textOnHorizontalView}>{item.key}</Text>
-                <Text style = {styles.textOnHorizontalView}>{item.value}</Text>
               </View>
           }
         />
@@ -214,8 +289,10 @@ class RecipeDetailsView extends React.Component {
         <View style={styles.changeRecipeButton}>
 
         <Button
-          onPress={() => navigate('Overview', {})}
-          title={"Change Recipe"}
+          onPress={() => changeRecipeClicked(this.props.navigation)
+
+            }
+          title={this.props.navigation.state.params.isRecipeChange ? "Select Recipe" : "Change Recipe"}
           color="#FFFFFF"
 
 
@@ -224,7 +301,7 @@ class RecipeDetailsView extends React.Component {
 
         <View style={styles.startCookingButton}>
           <Button
-            onPress={() => navigate('Overview', {})}
+            onPress={() => this.props.navigation.navigate("Overview", {})}
             title="Start Cooking"
             color="#86A791"
           />

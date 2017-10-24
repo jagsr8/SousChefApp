@@ -29,6 +29,7 @@ export default class DailyOverviewCard extends View {
                                 recipeId: breakfast.ID,
                                 day: this.props.day,
                                 meal: 'Breakfast',
+                                isRecipeChange: false,
                               })
                             }}>
             <View style={styles['DailyOverviewCard__recipe']}>
@@ -52,6 +53,7 @@ export default class DailyOverviewCard extends View {
                                 recipeId: lunch.ID,
                                 day: this.props.day,
                                 meal: 'Lunch',
+                                isRecipeChange: false,
                               })
                             }}>
             <View style={styles['DailyOverviewCard__recipe']}>
@@ -75,6 +77,7 @@ export default class DailyOverviewCard extends View {
                                 recipeId: dinner.ID,
                                 day: this.props.day,
                                 meal: 'Dinner',
+                                isRecipeChange: false,
                               })
                             }}>
             <View style={[styles['DailyOverviewCard__recipe'],styles['DailyOverviewCard__recipe--bottom']]}>

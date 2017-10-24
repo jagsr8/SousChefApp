@@ -1,0 +1,333 @@
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _class,
+    _temp2,
+    _jsxFileName = '/Users/darshanpatel/Documents/GitHub/SousChefApp/TagInput.js',
+    _class2,
+    _temp4;
+
+var _react = require('react');
+
+var React = babelHelpers.interopRequireWildcard(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = babelHelpers.interopRequireDefault(_propTypes);
+
+var _reactNative = require('react-native');
+
+var _invariant = require('invariant');
+
+var _invariant2 = babelHelpers.interopRequireDefault(_invariant);
+
+var windowWidth = _reactNative.Dimensions.get('window').width;
+
+var TagInput = (_temp2 = _class = function (_React$PureComponent) {
+  babelHelpers.inherits(TagInput, _React$PureComponent);
+
+  function TagInput() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    babelHelpers.classCallCheck(this, TagInput);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = babelHelpers.possibleConstructorReturn(this, (_ref = TagInput.__proto__ || Object.getPrototypeOf(TagInput)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      inputWidth: 90,
+      wrapperHeight: 36
+    }, _this.wrapperWidth = windowWidth, _this.spaceLeft = 0, _this.contentHeight = 0, _this.scrollViewHeight = 0, _this.tagInput = null, _this.scrollView = null, _this.measureWrapper = function (event) {
+      _this.wrapperWidth = event.nativeEvent.layout.width;
+      var inputWidth = TagInput.inputWidth(_this.props.text, _this.spaceLeft, _this.wrapperWidth);
+      if (inputWidth !== _this.state.inputWidth) {
+        _this.setState({ inputWidth: inputWidth });
+      }
+    }, _this.onBlur = function (event) {
+      (0, _invariant2.default)(_reactNative.Platform.OS === "ios", "only iOS gets text on TextInput.onBlur");
+      _this.props.onChangeText(event.nativeEvent.text);
+    }, _this.onKeyPress = function (event) {
+      if (_this.props.text !== '' || event.nativeEvent.key !== 'Backspace') {
+        return;
+      }
+      var tags = [].concat(babelHelpers.toConsumableArray(_this.props.value));
+      tags.pop();
+      _this.props.onChange(tags);
+      _this.focus();
+    }, _this.focus = function () {
+      (0, _invariant2.default)(_this.tagInput, "should be set");
+      _this.tagInput.focus();
+    }, _this.removeIndex = function (index) {
+      var tags = [].concat(babelHelpers.toConsumableArray(_this.props.value));
+      tags.splice(index, 1);
+      _this.props.onChange(tags);
+    }, _this.scrollToBottom = function () {
+      var y = _this.contentHeight - _this.scrollViewHeight;
+      if (y <= 0) {
+        return;
+      }
+      var scrollView = _this.scrollView;
+      (0, _invariant2.default)(scrollView, "this.scrollView ref should exist before scrollToBottom called");
+      scrollView.scrollTo({ y: y, animated: true });
+    }, _this.tagInputRef = function (tagInput) {
+      (0, _invariant2.default)(typeof tagInput === "object", "TextInput ref is object");
+      _this.tagInput = tagInput;
+    }, _this.scrollViewRef = function (scrollView) {
+      (0, _invariant2.default)(typeof scrollView === "object", "ScrollView ref is object");
+      _this.scrollView = scrollView;
+    }, _this.onScrollViewContentSizeChange = function (w, h) {
+      if (_this.contentHeight === h) {
+        return;
+      }
+      var nextWrapperHeight = Math.min(_this.props.maxHeight, h);
+      if (nextWrapperHeight !== _this.state.wrapperHeight) {
+        _this.setState({ wrapperHeight: nextWrapperHeight }, _this.contentHeight < h ? _this.scrollToBottom : undefined);
+      } else if (_this.contentHeight < h) {
+        _this.scrollToBottom();
+      }
+      _this.contentHeight = h;
+    }, _this.onScrollViewLayout = function (event) {
+      _this.scrollViewHeight = event.nativeEvent.layout.height;
+    }, _this.onLayoutLastTag = function (endPosOfTag) {
+      var margin = 3;
+      _this.spaceLeft = _this.wrapperWidth - endPosOfTag - margin - 10;
+      var inputWidth = TagInput.inputWidth(_this.props.text, _this.spaceLeft, _this.wrapperWidth);
+      if (inputWidth !== _this.state.inputWidth) {
+        _this.setState({ inputWidth: inputWidth });
+      }
+    }, _temp), babelHelpers.possibleConstructorReturn(_this, _ret);
+  }
+
+  babelHelpers.createClass(TagInput, [{
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var inputWidth = TagInput.inputWidth(nextProps.text, this.spaceLeft, this.wrapperWidth);
+      if (inputWidth !== this.state.inputWidth) {
+        this.setState({ inputWidth: inputWidth });
+      }
+      var wrapperHeight = Math.min(nextProps.maxHeight, this.contentHeight);
+      if (wrapperHeight !== this.state.wrapperHeight) {
+        this.setState({ wrapperHeight: wrapperHeight });
+      }
+    }
+  }, {
+    key: 'componentWillUpdate',
+    value: function componentWillUpdate(nextProps, nextState) {
+      if (this.props.onHeightChange && nextState.wrapperHeight !== this.state.wrapperHeight) {
+        this.props.onHeightChange(nextState.wrapperHeight);
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      var tags = this.props.value.map(function (tag, index) {
+        return React.createElement(Tag, {
+          index: index,
+          label: _this2.props.labelExtractor(tag),
+          isLastTag: _this2.props.value.length === index + 1,
+          onLayoutLastTag: _this2.onLayoutLastTag,
+          removeIndex: _this2.removeIndex,
+          tagColor: _this2.props.tagColor,
+          tagTextColor: '#FFF',
+          tagContainerStyle: _this2.props.tagContainerStyle,
+          tagTextStyle: _this2.props.tagTextStyle,
+          key: index,
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 221
+          }
+        });
+      });
+
+      return React.createElement(
+        _reactNative.TouchableWithoutFeedback,
+        {
+          style: styles.container,
+          onLayout: this.measureWrapper,
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 236
+          }
+        },
+        React.createElement(
+          _reactNative.View,
+          { style: [styles.wrapper, { height: this.state.wrapperHeight }], __source: {
+              fileName: _jsxFileName,
+              lineNumber: 240
+            }
+          },
+          React.createElement(
+            _reactNative.ScrollView,
+            {
+              ref: this.scrollViewRef,
+              style: styles.tagInputContainerScroll,
+              onContentSizeChange: this.onScrollViewContentSizeChange,
+              onLayout: this.onScrollViewLayout,
+              keyboardShouldPersistTaps: 'handled',
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 241
+              }
+            },
+            React.createElement(
+              _reactNative.View,
+              { style: styles.tagInputContainer, __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 248
+                }
+              },
+              tags
+            )
+          )
+        )
+      );
+    }
+  }], [{
+    key: 'inputWidth',
+    value: function inputWidth(text, spaceLeft, wrapperWidth) {
+      if (text === "") {
+        return 90;
+      } else if (spaceLeft >= 100) {
+        return spaceLeft - 10;
+      } else {
+        return wrapperWidth;
+      }
+    }
+  }]);
+  return TagInput;
+}(React.PureComponent), _class.propTypes = {
+  value: _propTypes2.default.array.isRequired,
+  onChange: _propTypes2.default.func.isRequired,
+  labelExtractor: _propTypes2.default.func.isRequired,
+  text: _propTypes2.default.string.isRequired,
+  onChangeText: _propTypes2.default.func.isRequired,
+  tagColor: _propTypes2.default.string,
+  tagTextColor: _propTypes2.default.string,
+  tagContainerStyle: _reactNative.ViewPropTypes.style,
+  tagTextStyle: _reactNative.Text.propTypes.style,
+  inputColor: _propTypes2.default.string,
+
+  inputProps: _propTypes2.default.shape(_reactNative.TextInput.propTypes),
+  maxHeight: _propTypes2.default.number,
+  onHeightChange: _propTypes2.default.func
+}, _class.defaultProps = {
+  tagColor: '#dddddd',
+  tagTextColor: '#777777',
+  inputColor: '#777777',
+  maxHeight: 75
+}, _temp2);
+var Tag = (_temp4 = _class2 = function (_React$PureComponent2) {
+  babelHelpers.inherits(Tag, _React$PureComponent2);
+
+  function Tag() {
+    var _ref2;
+
+    var _temp3, _this3, _ret2;
+
+    babelHelpers.classCallCheck(this, Tag);
+
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    return _ret2 = (_temp3 = (_this3 = babelHelpers.possibleConstructorReturn(this, (_ref2 = Tag.__proto__ || Object.getPrototypeOf(Tag)).call.apply(_ref2, [this].concat(args))), _this3), _this3.curPos = null, _this3.onPress = function () {
+      _this3.props.removeIndex(_this3.props.index);
+    }, _this3.onLayoutLastTag = function (event) {
+      var layout = event.nativeEvent.layout;
+      _this3.curPos = layout.width + layout.x;
+      if (_this3.props.isLastTag) {
+        _this3.props.onLayoutLastTag(_this3.curPos);
+      }
+    }, _temp3), babelHelpers.possibleConstructorReturn(_this3, _ret2);
+  }
+
+  babelHelpers.createClass(Tag, [{
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      if (!this.props.isLastTag && nextProps.isLastTag && this.curPos !== null && this.curPos !== undefined) {
+        this.props.onLayoutLastTag(this.curPos);
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return React.createElement(
+        _reactNative.TouchableOpacity,
+        {
+          onPress: this.onPress,
+          onLayout: this.onLayoutLastTag,
+          style: [styles.tag, { backgroundColor: this.props.tagColor }, this.props.tagContainerStyle],
+          __source: {
+            fileName: _jsxFileName,
+            lineNumber: 344
+          }
+        },
+        React.createElement(
+          _reactNative.Text,
+          { style: [styles.tagText, { color: this.props.tagTextColor }, this.props.tagTextStyle], __source: {
+              fileName: _jsxFileName,
+              lineNumber: 353
+            }
+          },
+          this.props.label,
+          '\xA0\xD7'
+        )
+      );
+    }
+  }]);
+  return Tag;
+}(React.PureComponent), _class2.propTypes = {
+  index: _propTypes2.default.number.isRequired,
+  label: _propTypes2.default.string.isRequired,
+  isLastTag: _propTypes2.default.bool.isRequired,
+  onLayoutLastTag: _propTypes2.default.func.isRequired,
+  removeIndex: _propTypes2.default.func.isRequired,
+  tagColor: _propTypes2.default.string.isRequired,
+  tagTextColor: _propTypes2.default.string.isRequired,
+  tagContainerStyle: _reactNative.ViewPropTypes.style,
+  tagTextStyle: _reactNative.Text.propTypes.style
+}, _temp4);
+
+
+var styles = _reactNative.StyleSheet.create({
+  container: {
+    flex: 1
+  },
+  wrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start'
+  },
+  tagInputContainerScroll: {
+    flex: 1
+  },
+  tagInputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    borderRadius: 2
+  },
+  textInputContainer: {
+    height: 0,
+    borderRadius: 2
+  },
+  tag: {
+    borderRadius: 2,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.15)'
+  },
+  tagText: {
+    height: 24,
+    borderRadius: 2,
+    color: '#FFF',
+    backgroundColor: 'rgba(0,0,0,0.15)'
+  }
+});
+
+exports.default = TagInput;
