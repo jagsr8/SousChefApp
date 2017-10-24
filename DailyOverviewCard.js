@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Dimensions, Text, View, ScrollView, FlatList, Image, TouchableHighlight } from 'react-native';
+import CheckBox from 'react-native-check-box';
 import placeholderImg from './images/placeholder.png';
 import chevronRight from './images/chevron-right.png';
 import omelette from './images/omelette.png';
@@ -8,9 +9,16 @@ import cod from './images/cod.png';
 
 export default class DailyOverviewCard extends View {
 
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+      isSelecting: this.props.isSelecting,
+    };
+  }
 
   render() {
-    const navigate = this.props.navigate;
+    const {navigate, state} = this.props.navigation;
     const breakfast = this.props.recipes.Breakfast;
     const lunch = this.props.recipes.Lunch;
     const dinner = this.props.recipes.Dinner;
@@ -25,16 +33,21 @@ export default class DailyOverviewCard extends View {
           <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                       underlayColor="rgba(0,0,0,0.08)"
                             onPress={() => {
-                              navigate('Recipe', {
-                                recipeId: breakfast.ID,
-                                day: this.props.day,
-                                meal: 'Breakfast',
-                                isRecipeChange: false,
-                              })
+                              if(this.state.isSelecting) {
+                                this.props.onSelect(this.props.day*3+0, breakfast.ID);
+                              } else {
+                                navigate('Recipe', {
+                                  recipeId: breakfast.ID,
+                                  day: this.props.day,
+                                  meal: 'Breakfast',
+                                  isRecipeChange: false,
+                                });
+                              }
                             }}>
             <View style={styles['DailyOverviewCard__recipe']}>
-              <Image source={{uri: breakfast.Image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} />
-              <View style={styles['DailyOverviewCard__recipeText']}>
+              { this.state.isSelecting && <CheckBox style={styles['DailyOverviewCard__recipeCheckbox']} itemStyle={{color: 'white'}} onClick={() => {}} /> }
+              { !this.state.isSelecting && <Image source={{uri: breakfast.Image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} /> }
+              <View style={[styles['DailyOverviewCard__recipeText'], this.state.isSelecting ? { width: Dimensions.get('window').width - 200 } : {}]}>
                 <Text style={styles['DailyOverviewCard__recipeMeal']}>
                   Breakfast
                 </Text>
@@ -42,23 +55,28 @@ export default class DailyOverviewCard extends View {
                   {breakfast.Name}
                 </Text>
               </View>
-              <Image source={chevronRight} style={styles['DailyOverviewCard__rightChevron']} />
+              { !this.state.isSelecting && <Image source={chevronRight} style={styles['DailyOverviewCard__rightChevron']} /> }
             </View>
           </TouchableHighlight>
 
           <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                       underlayColor="rgba(0,0,0,0.08)"
                             onPress={() => {
-                              navigate('Recipe', {
-                                recipeId: lunch.ID,
-                                day: this.props.day,
-                                meal: 'Lunch',
-                                isRecipeChange: false,
-                              })
+                              if(this.state.isSelecting) {
+                                this.props.onSelect(this.props.day*3+1, lunch.ID);
+                              } else {
+                                navigate('Recipe', {
+                                  recipeId: lunch.ID,
+                                  day: this.props.day,
+                                  meal: 'Lunch',
+                                  isRecipeChange: false,
+                                });
+                              }
                             }}>
             <View style={styles['DailyOverviewCard__recipe']}>
-              <Image source={{uri: lunch.Image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} />
-              <View style={styles['DailyOverviewCard__recipeText']}>
+              { this.state.isSelecting && <CheckBox style={styles['DailyOverviewCard__recipeCheckbox']} itemStyle={{color: 'white'}} onClick={() => {}} /> }
+              { !this.state.isSelecting && <Image source={{uri: lunch.Image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} /> }
+              <View style={[styles['DailyOverviewCard__recipeText'], this.state.isSelecting ? { width: Dimensions.get('window').width - 200 } : {}]}>
                 <Text style={styles['DailyOverviewCard__recipeMeal']}>
                   Lunch
                 </Text>
@@ -66,23 +84,28 @@ export default class DailyOverviewCard extends View {
                   {lunch.Name}
                 </Text>
               </View>
-              <Image source={chevronRight} style={styles['DailyOverviewCard__rightChevron']} />
+              { !this.state.isSelecting && <Image source={chevronRight} style={styles['DailyOverviewCard__rightChevron']} /> }
             </View>
           </TouchableHighlight>
 
           <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                       underlayColor="rgba(0,0,0,0.08)"
                             onPress={() => {
-                              navigate('Recipe', {
-                                recipeId: dinner.ID,
-                                day: this.props.day,
-                                meal: 'Dinner',
-                                isRecipeChange: false,
-                              })
+                              if(this.state.isSelecting) {
+                                this.props.onSelect(this.props.day*3+2, dinner.ID);
+                              } else {
+                                navigate('Recipe', {
+                                  recipeId: dinner.ID,
+                                  day: this.props.day,
+                                  meal: 'Dinner',
+                                  isRecipeChange: false,
+                                });
+                              }
                             }}>
             <View style={[styles['DailyOverviewCard__recipe'],styles['DailyOverviewCard__recipe--bottom']]}>
-              <Image source={{uri: dinner.Image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} />
-              <View style={styles['DailyOverviewCard__recipeText']}>
+              { this.state.isSelecting && <CheckBox style={styles['DailyOverviewCard__recipeCheckbox']} itemStyle={{color: 'white'}} onClick={() => {}} /> }
+              { !this.state.isSelecting && <Image source={{uri: dinner.Image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} /> }
+              <View style={[styles['DailyOverviewCard__recipeText'], this.state.isSelecting ? { width: Dimensions.get('window').width - 200 } : {}]}>
                 <Text style={styles['DailyOverviewCard__recipeMeal']}>
                   Dinner
                 </Text>
@@ -90,7 +113,7 @@ export default class DailyOverviewCard extends View {
                   {dinner.Name}
                 </Text>
               </View>
-              <Image source={chevronRight} style={styles['DailyOverviewCard__rightChevron']} />
+              { !this.state.isSelecting && <Image source={chevronRight} style={styles['DailyOverviewCard__rightChevron']} /> }
             </View>
           </TouchableHighlight>
 
@@ -149,6 +172,11 @@ const styles = StyleSheet.create({
   'DailyOverviewCard__recipe--bottom': {
     borderBottomWidth: 0,
   },
+  'DailyOverviewCard__recipeCheckbox': {
+    width: 20,
+    height: 20,
+    margin: 10,
+  },
   'DailyOverviewCard__recipeImage': {
     height: 40,
     width: 40,
@@ -175,6 +203,5 @@ const styles = StyleSheet.create({
     width: 15,
     paddingRight: 5,
     opacity: 0.5,
-
   },
 });

@@ -15,7 +15,7 @@ export default class WeeklyOverviewView extends View {
     if(params.mode === 'select') {
       leftHeader = (
         <View style={styles.headerActions}>
-          <TouchableWithoutFeedback onPress={() => setParams({ mode: '' })}>
+          <TouchableWithoutFeedback onPress={() => navigate('List', {})}>
             <View><Text style={styles.headerText}>Cancel</Text></View>
           </TouchableWithoutFeedback>
         </View>
@@ -30,12 +30,10 @@ export default class WeeklyOverviewView extends View {
     } else {
       rightHeader = (
         <View style={styles.headerActions}>
-          <TouchableWithoutFeedback
-            onPress={() => navigate('Profile', {})}>
+          <TouchableWithoutFeedback onPress={() => navigate('Profile', {})}>
             <Image source={profileIcon} style={styles.headerImage} />
           </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
-            onPress={() => setParams({ mode: params.mode === 'select' ? '' : 'select' })}>
+          <TouchableWithoutFeedback onPress={() => navigate('Overview', {mode: 'select'})}>
             <Image source={shoppingCart} style={styles.headerImage} />
           </TouchableWithoutFeedback>
         </View>
@@ -55,21 +53,33 @@ export default class WeeklyOverviewView extends View {
   constructor(props) {
     super(props);
 
+    const {params} = this.props.navigation.state;
+
+    this.selectedRecipes = [];
+
     this.state = {
       weeklyPlan: [],
+      isSelecting: params.mode && params.mode === 'select',
     };
 
   }
 
   componentDidMount() {
-    this.getMoviesFromApiAsync().then((plan) => {
-      this.setState({
-        weeklyPlan: plan
+    this.getWeeklyPlanFromApiAsync()
+      .then((plan) => {
+        plan.map((item, index) => item.key = index);
+        this.setState({
+          weeklyPlan: plan
+        });
+      })
+      .catch((error) => {
+        console.error(error);
       });
-    });
+    this.props.navigation.setParams({ onSelectMode: this.setState.bind(this) });
   }
 
-  getMoviesFromApiAsync() {
+  getWeeklyPlanFromApiAsync() {
+    console.log(firebase.auth().currentUser.uid);
     return fetch(`http://souschef-182502.appspot.com/api/v1/users/weekly_plan?user_id=${firebase.auth().currentUser.uid}`)
       .then((response) => response.json())
       .then((responseJson) => {
@@ -80,9 +90,12 @@ export default class WeeklyOverviewView extends View {
       });
   }
 
+  selectRecipe(index, recipeId) {
+    this.selectedRecipes[index] = this.selectedRecipes[index] === recipeId ? null : recipeId;
+    console.log(this.selectedRecipes);
+  }
+  
   render() {
-    const { navigate } = this.props.navigation;
-
     return (
       <View style={styles['WeeklyOverview']}>
         <Text style={styles['WeeklyOverview__title']}>Recipes This Week</Text>
@@ -90,8 +103,13 @@ export default class WeeklyOverviewView extends View {
           <FlatList
             data={this.state.weeklyPlan}
             renderItem={
-              ({item, index}) =>
-                <DailyOverviewCard key={index} day={index} recipes={item} navigate={navigate} />
+              ({item, index}) => 
+                <DailyOverviewCard key={index}
+                                   day={index}
+                               recipes={item}
+                            navigation={this.props.navigation}
+                           isSelecting={this.state.isSelecting}
+                              onSelect={this.selectRecipe.bind(this)} />
             }
           />
         </ScrollView>
