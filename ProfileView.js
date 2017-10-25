@@ -21,7 +21,7 @@ export default class ProfileView extends View {
     }
     rightHeader = (
       <View style={styles.headerActions}>
-        <TouchableWithoutFeedback onPress={params.onDone}>
+        <TouchableWithoutFeedback onPress={() => params.onDone(params.onBack)}>
           <View><Text style={[styles.headerText,styles.headerTextBold]}>Save</Text></View>
         </TouchableWithoutFeedback>
       </View>
@@ -75,30 +75,28 @@ export default class ProfileView extends View {
       });
   }
 
-  updateDietaryPreferences() {
+  updateDietaryPreferences(onBack) {
       this.setState({ error: '', loading: true });
       var uid = firebase.auth().currentUser.uid;
       var call = 'https://souschef-182502.appspot.com/api/v1/users/update_profile?user_id='+uid;
       diet = this.state.diet;
       exclusions = this.state.tags.join();
-      if ((this.state.diet == 'None') && (exclusions == '' || exclusions == 'None')) {
-           this.props.navigation.navigate('Overview', {});
-           return;
-      }
 
       if ((this.state.diet == 'None')) {
           diet = '';
       }
-       call += '&diet='+diet;
+      call += '&diet='+diet;
       if ((exclusions == '' || exclusions == 'None')) {
           exclusions = '';
       }
       call += '&exclusions='+exclusions;
+
       fetch(call)
           .then(() => {
               fetch('https://souschef-182502.appspot.com/api/v1/users/weekly_plan_create?user_id='+uid)
                   .then(() => {
-                      this.props.navigation.navigate('Overview', {});
+                      onBack();
+                      this.props.navigation.goBack();
                   })
           })
           .catch((error) => {
@@ -141,13 +139,20 @@ export default class ProfileView extends View {
       }
       const { navigate, state } = this.props.navigation;
       let diets = [{
-        key: 'vegetarian'
+        key: 'vegetarian',
+        label: 'Vegetarian'
       },
       {
-        key: 'glutenFree'
+        key: 'glutenFree',
+        label: 'Gluten Free'
       },
       {
-        key: 'dairyFree'
+        key: 'dairyFree',
+        label: 'Dairy Free'
+      },
+      {
+        key: 'cheap',
+        label: 'Cheap'
       }];
 
       return <KeyboardAvoidingView behavior='position' style={styles.profile}>
@@ -164,7 +169,7 @@ export default class ProfileView extends View {
                         itemStyle={{height: 100, color: 'white',}}>
               <Picker.Item label="None" value="none" />
               {diets.map((item, index) => {
-                return <Picker.Item key={index} label={item.key} value={item.key} />
+                return <Picker.Item key={index} label={item.label} value={item.key} />
               })}
             </Picker>
           </View>

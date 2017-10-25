@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
 export default class LoginForm extends React.Component {
 
     state = {
-        email: 'c@mail.com',
-        password: 'aaaaaaaa',
+        email: 'a@b.com',
+        password: 'blahblah',
         loading: false,
         error: false,
     }

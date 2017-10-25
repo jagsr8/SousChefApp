@@ -88,7 +88,7 @@ export default class ShoppingCategoryCard extends React.Component {
                   />
                   <Text style={styles.itemName}>{`${item[0].charAt(0).toUpperCase()}${item[0].slice(1)}`}</Text>
                   <Text style={styles.itemQuantity}>
-                    { Object.entries(item[1]).map((amt) => `${amt[1]} ${amt[0]}`).join('\n') }
+                    { Object.entries(item[1].UnitMap).map((amt) => `${amt[1] % 1 === 0 ? amt[1] : amt[1].toFixed(2)} ${amt[0]}`).join('\n') }
                   </Text>
                 </View>
               </TouchableWithoutFeedback>
