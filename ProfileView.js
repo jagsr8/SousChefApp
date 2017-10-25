@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Dimensions, ActivityIndicator, Text, View, ScrollView, FlatList, Picker, TouchableWithoutFeedback, TouchableHighlight, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native';
+import { StyleSheet, Dimensions, ActivityIndicator, Text, View, ScrollView, FlatList, Image, Picker, TouchableWithoutFeedback, TouchableHighlight, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native';
 import firebase from 'firebase';
 import TagInput from './TagInput.js';
+import chevronLeftIcon from './images/chevron-left.png';
 
 export default class ProfileView extends View {
   static navigationOptions = ({ navigation }) => {
@@ -14,7 +15,10 @@ export default class ProfileView extends View {
       leftHeader = (
         <View style={styles.headerActions}>
           <TouchableWithoutFeedback onPress={() => goBack()}>
-            <View><Text style={styles.headerText}>Back</Text></View>
+            <View style={styles.headerIconText}>
+              <Image source={chevronLeftIcon} style={styles.headerImageBack} />
+              <Text style={styles.headerText}>Back</Text>
+            </View>
           </TouchableWithoutFeedback>
         </View>
       )
@@ -52,9 +56,9 @@ export default class ProfileView extends View {
   componentDidMount() {
       this.props.navigation.setParams({ onDone: this.updateDietaryPreferences.bind(this) });
       this.getMoviesFromApiAsync().then((plan) => {
-          var exclus = plan['exclusions'];
+          var exclus = plan['exclusions'] ? plan['exclusions'] : [];
           var die = plan['diet'];
-          if ((plan['exclusions'].length == 1 && plan['exclusions'][0] == "")) {
+          if (exclus.length == 1 && exclus[0] == "") {
              plan['exclusions'].pop()
           }
           this.setState({
@@ -166,7 +170,7 @@ export default class ProfileView extends View {
             <Picker selectedValue={this.state.diet}
                     onValueChange={(itemValue, itemIndex) => this.setState({ diet: itemValue, })}
                             style={styles.selectionPicker}
-                        itemStyle={{height: 100, color: 'white',}}>
+                        itemStyle={{height: 150, color: 'white',}}>
               <Picker.Item label="None" value="none" />
               {diets.map((item, index) => {
                 return <Picker.Item key={index} label={item.label} value={item.key} />
@@ -181,7 +185,7 @@ export default class ProfileView extends View {
             {this.renderTags()}
             <View style={styles.tagInputContainer}>
                 <TextInput
-                  placeholder='Exclusions'
+                  placeholder='Enter exclusion here'
                   placeholderTextColor = 'rgba(255,255,255,0.4)'
                   autoCorrect ={false}
                   style={styles.input}
@@ -192,7 +196,7 @@ export default class ProfileView extends View {
                       onPress={() => {
                           this.addExclusion()
                       }}>
-                      <Text style={styles.buttonText}>Add</Text>
+                      <View><Text style={styles.buttonText}>Add</Text></View>
                   </TouchableOpacity>
              </View>
 
@@ -222,19 +226,33 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
   },
-  headerImage: {
+  headerIconText: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerImageRight: {
     height: 30,
     width: 30,
     opacity: 0.75,
     marginLeft: 15,
   },
+  headerImageBack: {
+    height: 40,
+    width: 40,
+    opacity: 0.75,
+    marginLeft: -20,
+    marginRight: -10,
+  },
   headerText: {
     color: '#FFF',
+    height: 30,
     fontSize: 17,
-    paddingTop: 8,
+    paddingTop: 4,
   },
   headerTextBold: {
     fontWeight: 'bold',
+    paddingTop: 8,
   },
   profile: {
     flex: 1,
@@ -289,10 +307,10 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   selectionPicker: {
-    width: Dimensions.get('window').width - 80,
-    borderRadius: 5,
+    width: Dimensions.get('window').width - 40,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
     backgroundColor: 'rgba(0,0,0,0.15)',
-    margin: 20,
     marginTop: 10,
   },
   selectionList: {
@@ -315,42 +333,44 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   input: {
-      width: 150,
+      width: Dimensions.get('window').width - 120,
       backgroundColor: 'rgba(0,0,0,0.15)',
       color: '#FFF',
-      borderRadius: 10,
-      fontSize: 13,
+      borderBottomLeftRadius: 10,
+      fontSize: 16,
       fontWeight: 'normal',
       textAlign: 'left',
       paddingHorizontal: 20,
-      marginHorizontal: 20,
-      marginVertical: 10,
-      paddingVertical: 10,
+      paddingVertical: 15,
       justifyContent: 'center'
   },
   buttonInput: {
-      backgroundColor: 'rgba(0,0,0,0.15)',
-      borderRadius: 10,
+      width: 80,
+      backgroundColor: 'rgba(0,0,0,0.3)',
+      borderBottomRightRadius: 10,
       paddingHorizontal: 20,
-      marginHorizontal: 10,
-      marginVertical: 10,
-      paddingVertical: 10,
+      paddingVertical: 15,
       justifyContent: 'center'
   },
   tagInputContainer: {
+      width: Dimensions.get('window').width - 40,
+      marginTop: 30,
       flexDirection: 'row',
       flex: 1
   },
   buttonText: {
       textAlign: 'center',
       color: '#FFFFFF',
-      fontWeight: '700',
-      fontSize: 13
+      fontSize: 16,
   },
   tagStyle: {
-      backgroundColor: 'rgba(0,0,0,0.15)',
-      borderRadius: 10,
+      backgroundColor: 'rgba(0,0,0,0.3)',
+      paddingTop: 5,
+      paddingBottom: 5,
+      paddingHorizontal: 10,
+      borderRadius: 5,
       marginHorizontal: 5,
       justifyContent: 'center',
+      alignItems: 'center',
   }
 });
