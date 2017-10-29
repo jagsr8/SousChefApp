@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     paddingBottom: 40,
-    backgroundColor: '#07988D',
+    backgroundColor: '#06988D',
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
