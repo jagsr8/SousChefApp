@@ -35,7 +35,7 @@ class HomeScreen extends React.Component {
     if(firebase.auth().currentUser) {
       navigate('Overview', {});
     } else {
-      navigate('StartUpView', {});
+      navigate('Home', {});
     }
   }
 

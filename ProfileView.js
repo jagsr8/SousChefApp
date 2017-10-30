@@ -81,10 +81,6 @@ export default class ProfileView extends View {
       var call = 'https://souschef-182502.appspot.com/api/v1/users/update_profile?user_id='+uid;
       diet = this.state.diet;
       exclusions = this.state.tags.join();
-      if ((this.state.diet == 'None') && (exclusions == '' || exclusions == 'None')) {
-           this.props.navigation.navigate('Overview', {});
-           return;
-      }
 
       if ((this.state.diet == 'None')) {
           diet = '';
@@ -119,6 +115,17 @@ export default class ProfileView extends View {
       } else {
           this.selectionSet.add(item.key);
       }
+  }
+
+  logout() {
+      firebase.auth().signOut()
+                  .then(() => {
+                      console.log('Success');
+                      this.props.navigation.navigate('Home', {});
+                  })
+                  .catch((error) => {
+                      console.log(error)
+          });
   }
 
   renderTags() {
@@ -190,9 +197,12 @@ export default class ProfileView extends View {
                       <Text style={styles.buttonText}>Add</Text>
                   </TouchableOpacity>
              </View>
-
           </View>
         </ScrollView>
+        {/*<TouchableOpacity style={styles.buttonContainer}
+            onPress={this.logout.bind(this)}>
+            <Text style={styles.buttonText}>Log Out</Text>
+        </TouchableOpacity>*/}
       </KeyboardAvoidingView>;
   }
 
@@ -335,6 +345,15 @@ const styles = StyleSheet.create({
   tagInputContainer: {
       flexDirection: 'row',
       flex: 1
+  },
+  buttonContainer: {
+      justifyContent: 'center',
+      height: 60,
+      backgroundColor: '#066963',
+      paddingHorizontal: 40,
+      marginBottom: 20,
+      marginHorizontal: 50,
+      borderRadius: 35
   },
   buttonText: {
       textAlign: 'center',
