@@ -1,130 +1,21 @@
 import React from 'react';
-import { AppRegistry, ActivityIndicator, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar} from 'react-native';
+import { AppRegistry, ActivityIndicator, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar, TouchableHighlight} from 'react-native';
 import { StackNavigator } from 'react-navigation';
+import { LinearGradient } from 'expo';
 import firebase from 'firebase';
-const win = Dimensions.get('window');
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#06988D',
-    justifyContent: 'flex-start'
-  },
-  image: {
-    flex: 0,
-    alignSelf: 'stretch',
-    width: win.width,
-    height: 200,
-    opacity: 0.6,
-  },
-  imageContainer: {
-      backgroundColor: 'rgba(0,0,0,1)'
-  },
-  text: {
-    fontSize: 25,
-    textAlign: 'center',
-    backgroundColor: 'rgba(0,0,0,0)',
-    color: 'white',
-    position: "absolute",
-    top: 100,
-    left: 20,
-    paddingRight: 20,
-  },
-  activity: {
-    flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingBottom: 40,
-    backgroundColor: '#07988D',
-    alignItems: 'center',
-    justifyContent: 'center',
-    },
-  horizontalView: {
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent: 'space-between',
-    paddingTop: 10
-  },
-
-  ingridentsList: {
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent: 'space-between',
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(255,255,255,.2)',
-  },
-  ingridentsContainer: {
-    borderRadius: 10,
-    backgroundColor: '#048277',
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 30,
-  },
-  directionsContainer: {
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 10,
-  },
-  headerText: {
-    fontSize: 25,
-    textAlign: 'left',
-    marginLeft: 30,
-    marginTop: 30,
-    backgroundColor: 'rgba(0,0,0,0)',
-    color: 'white',
-  },
-  textOnHorizontalView: {
-    fontSize: 20,
-    color: 'white',
-    paddingLeft: 10,
-    paddingRight: 10
-
-  },
-  changeRecipeButton: {
-    backgroundColor: '#066963',
-    borderRadius: 30,
-    paddingLeft: 30,
-    paddingRight: 30,
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 5,
-    marginBottom: 5,
-  },
-  startCookingButton: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 30,
-    paddingLeft: 30,
-    paddingRight: 30,
-    marginLeft: 30,
-    marginRight: 30,
-    marginTop: 5,
-    marginBottom: 5,
+function getDiet(responseJson) {
+  diet = {
+    'Vegan': responseJson.vegan,
+    'Vegetarian': responseJson.vegetarian,
+    'Keto': responseJson.ketogenic,
+    'Gluten Free': responseJson.glutenFree,
+    'Low Fodmap': responseJson.lowFodmap,
   }
-});
-
- function getDiet(responseJson) {
-    diet = ""
-    if (responseJson.vegan) {
-      diet += "Vegan ";
-    }
-    if (responseJson.vegetarian) {
-      diet += "Vegetarian ";
-    }
-    if (responseJson.ketogenic) {
-      diet += "Keto ";
-    }
-    if (responseJson.glutenFree) {
-      diet += "Gluten Free ";
-    }
-    if (responseJson.lowFodmap) {
-      diet += "Low Fodmap ";
-    }
-    return diet;
+  return Object.entries(diet).filter((item) => item[1]).map((item) => item[0]).join(', ');
 }
 
- function getIngredients(responseJson) {
+function getIngredients(responseJson) {
   try {
     extendedIngredients = responseJson.extendedIngredients;
     ingredientsJSON = []
@@ -139,9 +30,9 @@ const styles = StyleSheet.create({
   } catch (e) {
     return [];
   }
-  }
+}
 
- function getDirections(responseJson) {
+function getDirections(responseJson) {
   try {
     analyzedInstructions = responseJson.analyzedInstructions[0].steps;
     instructionsJSON = [];
@@ -154,22 +45,18 @@ const styles = StyleSheet.create({
   } catch (e) {
     return [];
   }
-
-
-  }
+}
 
 function changeRecipeClicked(navigate) {
-  if (!navigate.state.params.isRecipeChange) {
-      navigate.navigate("ChangeRecipe", {
-                                recipeId: navigate.state.params.recipeId,
-                                day: navigate.state.params.day,
-                                meal: navigate.state.params.meal,
-                              });
-    } else {
-
-      changeRecipe(navigate);
-    }
-
+  if(!navigate.state.params.isRecipeChange) {
+    navigate.navigate("ChangeRecipe", {
+      recipeId: navigate.state.params.recipeId,
+      day: navigate.state.params.day,
+      meal: navigate.state.params.meal,
+    });
+  } else {
+    changeRecipe(navigate);
+  }
 }
 
 async function changeRecipe(navigate) {
@@ -182,7 +69,7 @@ async function changeRecipe(navigate) {
     });
 }
 
-class RecipeDetailsView extends React.Component {
+export default class RecipeDetailsView extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const {navigate, state, setParams} = navigation;
     const {params} = state;
@@ -198,8 +85,6 @@ class RecipeDetailsView extends React.Component {
       isLoading: true
     }
   }
-
-
 
   componentDidMount() {
     return fetch(`https://souschef-182502.appspot.com/api/v1/recipes/recipe_details?recipe_id=${this.props.navigation.state.params.recipeId}`)
@@ -223,99 +108,239 @@ class RecipeDetailsView extends React.Component {
 
   render() {
     if (this.state.isLoading) {
-        return (
-                  <View style={styles.activity}>
-                    <ActivityIndicator color='#FFFFFF' size='large' />
-                 </View>
-        );
+      return (
+        <View style={styles.activity}>
+          <ActivityIndicator color='#FFFFFF' size='large' />
+        </View>
+      );
     }
     return (
       <View style={styles.container}>
-        <ScrollView>
-        <View style={styles.imageContainer}>
-          <Image
-          style={styles.image}
-          resizeMode={'cover'}   /* <= changed  */
-          source={{uri: this.state.dataSource.image}}
-          />
-        </View>
+        <ScrollView style={styles.content}>
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              resizeMode={'cover'}
+              source={{uri: this.state.dataSource.image}}
+            />
+            <LinearGradient colors={['rgba(0,0,0,0.5)', 'transparent', 'rgba(0,0,0,1)']} style={styles.imageMask}>
+              <Text style={styles.title}>{this.state.dataSource.title}</Text>
+            </LinearGradient>
+          </View>
 
-        <Text
-        style= {styles.text}>
-        {this.state.dataSource.title}
-        </Text>
-        <View style={styles.horizontalView}>
-          <Text style = {styles.textOnHorizontalView}>
-          {
-            this.state.dataSource.readyInMinutes
-          } min
-          </Text>
-          <Text style = {styles.textOnHorizontalView}>
+          <View style={styles.detailBar}>
+            <Text style = {styles.detailBarText}>{`${this.state.dataSource.readyInMinutes} min`}</Text>
+            <Text style = {styles.detailBarText}></Text>
+            <Text style = {styles.detailBarText}></Text>
+            <Text style = {styles.detailBarText}>{this.state.dataSource.diet}</Text>
+          </View>
 
-          </Text>
-          <Text style = {styles.textOnHorizontalView}>
+          <View style={styles.sectionCard}>
+            <Text style={styles.sectionHeaderText}>Ingredients</Text>
+            <FlatList style={styles.ingredientsList}
+                       data={this.state.dataSource.ingredients}
+                 renderItem={({item}) => (
+                              <View style={styles.ingredient}>
+                                <Text style = {styles.ingredientName}>{`${item.name.charAt(0).toUpperCase()}${item.name.slice(1)}`}</Text>
+                                <Text style = {styles.ingredientAmount}>{item.value}</Text>
+                              </View>
+                            )}
+            />
+          </View>
 
-          </Text>
-          <Text style = {styles.textOnHorizontalView}>
-            {this.state.dataSource.diet}
-          </Text>
-        </View>
-
-        <Text style = {styles.headerText}>
-            Ingredients
-        </Text>
-        <FlatList style={styles.ingridentsContainer}
-          data={this.state.dataSource.ingredients}
-
-          renderItem={
-            ({item}) =>
-              <View style={styles.ingridentsList}>
-                <Text style = {styles.textOnHorizontalView}>{item.name}</Text>
-                <Text style = {styles.textOnHorizontalView}>{item.value}</Text>
-              </View>
-          }
-        />
-
-        <Text style = {styles.headerText}>
-            Directions
-        </Text>
-        <FlatList style={styles.directionsContainer}
-          data={this.state.dataSource.directions}
-
-          renderItem={
-            ({item}) =>
-              <View style={styles.ingridentsList}>
-                <Text style = {styles.textOnHorizontalView}>{item.key}</Text>
-              </View>
-          }
-        />
+          <View style={styles.sectionCard}>
+            <Text style={styles.sectionHeaderText}>Directions</Text>
+            <FlatList style={styles.directionsList}
+                       data={this.state.dataSource.directions}
+                 renderItem={({item, index}) => (
+                              <View style={styles.direction}>
+                                <Text style={styles.directionNum}>{index+1}</Text>
+                                <Text style={styles.directionText}>{item.key.split('. ').slice(1).join('. ')}</Text>
+                              </View>
+                            )}
+            />
+          </View>
         </ScrollView>
 
-        <View style={styles.changeRecipeButton}>
+        <LinearGradient colors={['transparent', 'rgb(6,152,141)']} style={styles.scrollMask} />
 
-        <Button
-          onPress={() => changeRecipeClicked(this.props.navigation)
+        <TouchableHighlight style={styles.actionButton} onPress={() => changeRecipeClicked(this.props.navigation)} underlayColor="rgba(0,0,0,0.3)">
+          <View style={styles.changeRecipeButton}>
+            <Text style={styles.changeRecipeButtonText}>{this.props.navigation.state.params.isRecipeChange ? "Select Recipe" : "Change Recipe"}</Text>
+          </View>
+        </TouchableHighlight>
 
-            }
-          title={this.props.navigation.state.params.isRecipeChange ? "Select Recipe" : "Change Recipe"}
-          color="#FFFFFF"
-
-
-        />
-        </View>
-
-        <View style={styles.startCookingButton}>
-          <Button
-            onPress={() => this.props.navigation.navigate("Overview", {})}
-            title="Start Cooking"
-            color="#86A791"
-          />
-        </View>
+        <TouchableHighlight style={styles.actionButton} onPress={() => {}} underlayColor="rgba(0,0,0,0.3)">
+          <View style={styles.startCookingButton}>
+            <Text style={styles.startCookingButtonText}>Start Cooking</Text>
+          </View>
+        </TouchableHighlight>
 
       </View>
-
     );
   }
 }
 
-export default RecipeDetailsView;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#06988D',
+    justifyContent: 'flex-start',
+    paddingBottom: 12.5,
+  },
+  activity: {
+    flex: 1,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 40,
+    backgroundColor: '#06988D',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  content: {
+    marginBottom: 12.5,
+  },
+  imageContainer: {
+    backgroundColor: 'rgb(0,0,0)'
+  },
+  image: {
+    flex: 1,
+    width: Dimensions.get('window').width,
+    height: 220,
+  },
+  imageMask: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    width: Dimensions.get('window').width,
+    height: 220,
+    marginTop: -220,
+    padding: 20,
+  },
+  title: {
+    color: 'white',
+    fontSize: 34,
+    fontWeight: 'bold',
+    backgroundColor: 'transparent',
+    shadowRadius: 5,
+    shadowColor: 'black',
+    shadowOffset: {
+      width: 0,
+      height: 0
+    },
+    shadowOpacity: 0.5,
+  },
+  detailBar: {
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+  },
+  detailBarText: {
+    fontSize: 17,
+    color: 'white',
+    marginHorizontal: 10,
+  },
+  sectionCard: {
+    flex: 1,
+    borderRadius: 10,
+    backgroundColor: 'rgba(0,0,0,0.15)',
+    marginHorizontal: 20,
+    marginVertical: 10,
+    padding: 20,
+  },
+  sectionHeaderText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'left',
+    color: 'rgba(255,255,255,0.4)',
+    marginBottom: 20,
+  },
+  ingredientsList: {
+    flex: 1,
+  },
+  ingredient: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+  ingredientName: {
+    fontSize: 16,
+    color: 'white',
+  },
+  ingredientAmount: {
+    fontSize: 16,
+    color: 'white',
+  },
+  directionsList: {
+    flex: 1,
+  },
+  direction: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+  },
+  directionNum: {
+    fontSize: 22,
+    color: 'rgba(255,255,255,0.4)',
+    textAlign: 'left',
+    width: 30,
+    marginRight: 5,
+    fontWeight: 'bold',
+  },
+  directionText: {
+    flex: 1,
+    fontSize: 16,
+    color: 'white',
+  },
+  scrollMask: {
+    flex: 1,
+    width: Dimensions.get('window').width,
+    height: 50,
+    marginTop: -50,
+    marginBottom: 50,
+  },
+  actionButton: {
+    height: 50,
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginVertical: 7.5,
+  },
+  changeRecipeButton: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  changeRecipeButtonText: {
+    color: 'white',
+    fontSize: 17,
+    textAlign: 'center',
+  },
+  startCookingButton: {
+    flex: 1,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  startCookingButtonText: {
+    color: '#056A63',
+    fontSize: 17,
+    textAlign: 'center',
+  },
+});

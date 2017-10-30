@@ -1,7 +1,9 @@
 import React from 'react';
-import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, SectionList, TouchableWithoutFeedback} from 'react-native';
+import { AppRegistry, StyleSheet, Dimensions, Text, View, Button, Image, FlatList, ScrollView, SectionList, TouchableWithoutFeedback} from 'react-native';
 import firebase from 'firebase';
 import ShoppingCategoryCard from './ShoppingCategoryCard.js';
+import filterIcon from './images/filter.png';
+import chevronLeftIcon from './images/chevron-left.png';
 
 const win = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -12,19 +14,36 @@ const styles = StyleSheet.create({
   headerActions: {
     flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 5,
     marginHorizontal: 20,
   },
-  headerImage: {
+  headerIconText: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerImageRight: {
     height: 30,
     width: 30,
     opacity: 0.75,
     marginLeft: 15,
   },
+  headerImageBack: {
+    height: 40,
+    width: 40,
+    opacity: 0.75,
+    marginLeft: -20,
+    marginRight: -10,
+  },
   headerText: {
     color: '#FFF',
+    height: 30,
     fontSize: 17,
-    paddingTop: 8,
+    paddingTop: 4,
+  },
+  headerTextBold: {
+    fontWeight: 'bold',
   },
   container: {
     flex: 1,
@@ -42,6 +61,31 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 20,
   },
+  emptyView: {
+    width: Dimensions.get('window').width - 40,
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.15)',
+    borderRadius: 10,
+  },
+  emptyViewText: {
+    color: '#FFF',
+    fontSize: 17,
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginVertical: 30,
+  },
+  emptyViewButton: {
+    width: Dimensions.get('window').width - 40,
+    paddingVertical: 15,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    backgroundColor: 'rgba(0,0,0,0.15)',
+  },
+  emptyViewButtonText: {
+    color: '#FFF',
+    fontSize: 17,
+    textAlign: 'center',
+  },
 });
 
 export default class ShoppingListView extends React.Component {
@@ -56,12 +100,15 @@ export default class ShoppingListView extends React.Component {
       headerTintColor: '#06988D',
       headerLeft: <View style={styles.headerActions}>
                     <TouchableWithoutFeedback onPress={() => goBack()}>
-                      <View><Text style={styles.headerText}>Cancel</Text></View>
+                      <View style={styles.headerIconText}>
+                        <Image source={chevronLeftIcon} style={styles.headerImageBack} />
+                        <Text style={styles.headerText}>Back</Text>
+                      </View>
                     </TouchableWithoutFeedback>
                   </View>,
       headerRight: <View style={styles.headerActions}>
-                     <TouchableWithoutFeedback onPress={() => navigate('Overview', { mode: 'select' })}>
-                       <View><Text style={styles.headerText}>Edit</Text></View>
+                     <TouchableWithoutFeedback onPress={() => navigate('Overview', { mode: 'select', onBack: params.onBack, })}>
+                       <Image source={filterIcon} style={styles.headerImageRight} />
                      </TouchableWithoutFeedback>
                    </View>,
     };
@@ -74,6 +121,11 @@ export default class ShoppingListView extends React.Component {
   }
 
   componentDidMount() {
+    this.updateShoppingList();
+    this.props.navigation.setParams({ onBack: this.updateShoppingList.bind(this) });
+  }
+
+  updateShoppingList() {
     this.getShoppingListFromApiAsync()
       .then((shoppingList) => {
         shoppingList = shoppingList ? Object.entries(shoppingList) : [];
@@ -109,12 +161,24 @@ export default class ShoppingListView extends React.Component {
             renderItem={
               ({item, index}) => <ShoppingCategoryCard key={index}
                                                   category={item[0]}
-                                                     items={Object.entries(item[1])} />
+                                                     items={Object.entries(item[1]).map((entry, ind) => {
+                                                       entry.key = ind;
+                                                       return entry;
+                                                     })} />
             }
           />
+          { this.state.shoppingList.length === 0 &&    
+              <View style={styles.emptyView}>
+                <Text style={styles.emptyViewText}>No items on shopping list.</Text>
+                <TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Overview', { mode: 'select', onBack: this.updateShoppingList.bind(this) })}>
+                  <View style={styles.emptyViewButton}>
+                    <Text style={styles.emptyViewButtonText}>Select Recipes</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+          }
         </ScrollView>
       </View>
-
     );
   }
 }

@@ -10,8 +10,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: Dimensions.get('window').width - 40,
     borderRadius: 10,
-    marginTop: 10,
-    marginBottom: 10,
+    marginVertical: 10,
     padding: 20,
     backgroundColor: 'rgba(0,0,0,0.15)',
     alignItems: 'flex-start',
@@ -33,8 +32,7 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     alignItems:'center',
     justifyContent: 'flex-start',
-    paddingTop: 5,
-    paddingBottom: 5,
+    paddingVertical: 5,
     borderBottomWidth: 1,
     borderColor: 'rgba(255,255,255,0.15)',
   },
@@ -88,7 +86,7 @@ export default class ShoppingCategoryCard extends React.Component {
                   />
                   <Text style={styles.itemName}>{`${item[0].charAt(0).toUpperCase()}${item[0].slice(1)}`}</Text>
                   <Text style={styles.itemQuantity}>
-                    { Object.entries(item[1]).map((amt) => `${amt[1]} ${amt[0]}`).join('\n') }
+                    { Object.entries(item[1].UnitMap).map((amt) => `${amt[1] % 1 === 0 ? amt[1] : amt[1].toFixed(2)} ${amt[0]}`).join('\n') }
                   </Text>
                 </View>
               </TouchableWithoutFeedback>

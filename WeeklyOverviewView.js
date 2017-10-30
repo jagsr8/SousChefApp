@@ -22,7 +22,7 @@ export default class WeeklyOverviewView extends View {
       )
       rightHeader = (
         <View style={styles.headerActions}>
-          <TouchableWithoutFeedback onPress={params.onSubmit}>
+          <TouchableWithoutFeedback onPress={() => params.onSubmit(params.onBack)}>
             <View><Text style={[styles.headerText,styles.headerTextBold]}>Done</Text></View>
           </TouchableWithoutFeedback>
         </View>
@@ -30,7 +30,7 @@ export default class WeeklyOverviewView extends View {
     } else {
       rightHeader = (
         <View style={styles.headerActions}>
-          <TouchableWithoutFeedback onPress={() => navigate('Profile', {})}>
+          <TouchableWithoutFeedback onPress={() => navigate('Profile', {onBack: params.onBackFunc})}>
             <Image source={profileIcon} style={styles.headerImage} />
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback onPress={() => navigate('List', {})}>
@@ -66,6 +66,14 @@ export default class WeeklyOverviewView extends View {
   }
 
   componentDidMount() {
+    this.updateWeeklyPlan();
+    this.props.navigation.setParams({
+      onSubmit: this.submitSelection.bind(this),
+      onBackFunc: this.updateWeeklyPlan.bind(this),
+    });
+  }
+
+  updateWeeklyPlan() {
     this.getWeeklyPlanFromApiAsync()
       .then((plan) => {
         plan.map((item, index) => item.key = index);
@@ -77,7 +85,6 @@ export default class WeeklyOverviewView extends View {
       .catch((error) => {
         console.error(error);
       });
-    this.props.navigation.setParams({ onSubmit: this.submitSelection.bind(this) });
   }
 
   getWeeklyPlanFromApiAsync() {
@@ -126,11 +133,12 @@ export default class WeeklyOverviewView extends View {
     </View>;
   }
 
-  submitSelection() {
+  submitSelection(onBack) {
     let selections = this.state.selectedRecipes.filter((recipeId) => recipeId && recipeId >= 0).join();
     fetch(`http://souschef-182502.appspot.com/api/v1/users/shopping_list_create?user_id=${firebase.auth().currentUser.uid}&recipe_ids=${selections}`)
       .then(() => {
-        this.props.navigation.navigate('List', {});
+        onBack();
+        this.props.navigation.goBack();
       })
       .catch((error) => {
         console.error(error);
@@ -192,7 +200,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     paddingBottom: 40,
-    backgroundColor: '#07988D',
+    backgroundColor: '#06988D',
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
