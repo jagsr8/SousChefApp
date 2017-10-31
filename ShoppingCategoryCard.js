@@ -79,6 +79,14 @@ export default class ShoppingCategoryCard extends React.Component {
       })
   }
 
+  componentDidUpdate() {
+    if(this.state.items !== this.props.items) {
+      this.setState({
+        items: this.props.items,
+      });
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
