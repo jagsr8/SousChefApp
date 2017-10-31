@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppRegistry, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, SectionList, TouchableWithoutFeedback} from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import firebase from 'firebase';
 import Checkbox from './Checkbox.js';
 
 
@@ -59,16 +59,24 @@ export default class ShoppingCategoryCard extends React.Component {
     super(props);
   
     this.state = {
-      checkedItems: []
+      items: props.items,
     };
   }
 
   checkItem(index) {
-    let checkedItems = this.state.checkedItems;
-    checkedItems[index] = !checkedItems[index];
-    this.setState({
-      checkedItems: checkedItems,
-    });
+    let items = this.state.items;
+    const currentUser = firebase.auth().currentUser.uid;
+    const category = this.props.category;
+    const item = items[index][0];
+    const checked = items[index][1].Done;
+
+    fetch(`http://souschef-182502.appspot.com/api/v1/users/item_${checked?'un':''}checked?user_id=${currentUser}&category=${category}&item=${item}`)
+      .then(() => {
+        items[index][1].Done = !checked;
+        this.setState({
+          items: items,
+        });
+      })
   }
 
   render() {
@@ -76,13 +84,13 @@ export default class ShoppingCategoryCard extends React.Component {
       <View style={styles.container}>
         <Text style={styles.categoryHeader}>{this.props.category}</Text>
         <FlatList style={styles.itemsList}
-          data={this.props.items}
+          data={this.state.items}
           extraData={this.state}
           renderItem={
             ({item, index}) => (
               <TouchableWithoutFeedback key={index} onPress={this.checkItem.bind(this,index)}>
                 <View style={styles.item}>
-                  <Checkbox selected={this.state.checkedItems[index]} onToggle={this.checkItem.bind(this,index)}
+                  <Checkbox selected={item[1].Done} onToggle={this.checkItem.bind(this,index)}
                   />
                   <Text style={styles.itemName}>{`${item[0].charAt(0).toUpperCase()}${item[0].slice(1)}`}</Text>
                   <Text style={styles.itemQuantity}>
