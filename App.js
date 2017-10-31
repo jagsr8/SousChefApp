@@ -35,7 +35,7 @@ class HomeScreen extends React.Component {
     if(firebase.auth().currentUser) {
       navigate('Overview', {});
     } else {
-      navigate('Home', {});
+      navigate('StartUp', {});
     }
   }
 
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
 
 
 export const SimpleApp = StackNavigator({
-  Home: { screen: StartUpView },
+  StartUp: { screen: StartUpView },
   SignUp: { screen: SignUpView },
   Login: { screen: LoginView },
   Profile: { screen: ProfileView },

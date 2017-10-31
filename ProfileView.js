@@ -127,7 +127,7 @@ export default class ProfileView extends View {
       firebase.auth().signOut()
                   .then(() => {
                       console.log('Success');
-                      this.props.navigation.navigate('Home', {});
+                      this.props.navigation.navigate('StartUp', {});
                   })
                   .catch((error) => {
                       console.log(error)
@@ -211,11 +211,11 @@ export default class ProfileView extends View {
                   </TouchableOpacity>
              </View>
           </View>
+          <TouchableOpacity style={styles.buttonContainer}
+              onPress={this.logout.bind(this)}>
+              <Text style={styles.buttonText}>Log Out</Text>
+          </TouchableOpacity>
         </ScrollView>
-        {/*<TouchableOpacity style={styles.buttonContainer}
-            onPress={this.logout.bind(this)}>
-            <Text style={styles.buttonText}>Log Out</Text>
-        </TouchableOpacity>*/}
       </KeyboardAvoidingView>;
   }
 
@@ -374,12 +374,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
       justifyContent: 'center',
-      height: 60,
+      height: 50,
       backgroundColor: '#066963',
-      paddingHorizontal: 40,
-      marginBottom: 20,
-      marginHorizontal: 50,
-      borderRadius: 35
+      marginVertical: 10,
+      borderRadius: 10,
   },
   buttonText: {
       textAlign: 'center',

@@ -66,7 +66,9 @@ export default class StartUpView extends React.Component {
       databaseURL: "https://souschef-182502.firebaseio.com",
       storageBucket: "souschef-182502.appspot.com"
     };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
   }
 
   render() {
