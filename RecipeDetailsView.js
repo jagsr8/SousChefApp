@@ -148,7 +148,7 @@ export default class RecipeDetailsView extends React.Component {
             />
           </View>
 
-          <View style={styles.sectionCard}>
+          <View style={[styles.sectionCard,styles.directionsCard]}>
             <Text style={styles.sectionHeaderText}>Directions</Text>
             <FlatList style={styles.directionsList}
                        data={this.state.dataSource.directions}
@@ -162,7 +162,7 @@ export default class RecipeDetailsView extends React.Component {
           </View>
         </ScrollView>
 
-        <LinearGradient colors={['transparent', 'rgb(6,152,141)']} style={styles.scrollMask} />
+        <LinearGradient colors={['rgba(6,152,141,0)', 'rgb(6,152,141)']} style={styles.scrollMask} />
 
         <TouchableHighlight style={styles.actionButton} onPress={() => changeRecipeClicked(this.props.navigation)} underlayColor="rgba(0,0,0,0.3)">
           <View style={styles.changeRecipeButton}>
@@ -170,11 +170,11 @@ export default class RecipeDetailsView extends React.Component {
           </View>
         </TouchableHighlight>
 
-        <TouchableHighlight style={styles.actionButton} onPress={() => {}} underlayColor="rgba(0,0,0,0.3)">
+        {/*<TouchableHighlight style={styles.actionButton} onPress={() => {}} underlayColor="rgba(0,0,0,0.3)">
           <View style={styles.startCookingButton}>
             <Text style={styles.startCookingButtonText}>Start Cooking</Text>
           </View>
-        </TouchableHighlight>
+        </TouchableHighlight>*/}
 
       </View>
     );
@@ -277,6 +277,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
   },
+  directionsCard: {
+    marginBottom: 30,
+  },
   directionsList: {
     flex: 1,
   },
@@ -304,10 +307,11 @@ const styles = StyleSheet.create({
   },
   scrollMask: {
     flex: 1,
-    width: Dimensions.get('window').width,
-    height: 50,
-    marginTop: -50,
-    marginBottom: 50,
+    position: 'absolute',
+    bottom: 90,
+    width: Dimensions.get('window').width - 40,
+    height: 30,
+    marginHorizontal: 20,
   },
   actionButton: {
     height: 50,

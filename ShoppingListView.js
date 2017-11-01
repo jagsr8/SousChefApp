@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppRegistry, StyleSheet, Dimensions, Text, View, Button, Image, FlatList, ScrollView, SectionList, TouchableWithoutFeedback} from 'react-native';
+import { LinearGradient } from 'expo';
 import firebase from 'firebase';
 import ShoppingCategoryCard from './ShoppingCategoryCard.js';
 import filterIcon from './images/filter.png';
@@ -61,6 +62,9 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 20,
   },
+  shoppingList: {
+    paddingBottom: 30,
+  },
   emptyView: {
     width: Dimensions.get('window').width - 40,
     alignItems: 'center',
@@ -85,6 +89,14 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 17,
     textAlign: 'center',
+  },
+  scrollMask: {
+    flex: 1,
+    position: 'absolute',
+    bottom: 40,
+    width: Dimensions.get('window').width - 40,
+    height: 30,
+    marginHorizontal: 20,
   },
 });
 
@@ -157,6 +169,7 @@ export default class ShoppingListView extends React.Component {
         <ScrollView showsVerticalScrollIndicator={false}>
           <FlatList
             data={this.state.shoppingList}
+            style={styles.shoppingList}
             extraData={this.state}
             renderItem={
               ({item, index}) => <ShoppingCategoryCard key={index}
@@ -178,6 +191,7 @@ export default class ShoppingListView extends React.Component {
               </View>
           }
         </ScrollView>
+        <LinearGradient colors={['rgba(6,152,141,0)', 'rgb(6,152,141)']} style={styles.scrollMask} />
       </View>
     );
   }

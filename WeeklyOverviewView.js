@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, ActivityIndicator, View, ScrollView, FlatList, Button, Image, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Dimensions, Text, ActivityIndicator, View, ScrollView, FlatList, Button, Image, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
+import { LinearGradient } from 'expo';
 import firebase from 'firebase';
 import DailyOverviewCard from './DailyOverviewCard.js';
 import profileIcon from './images/profile.png';
@@ -106,33 +107,6 @@ export default class WeeklyOverviewView extends View {
     });
   }
 
-  renderWeeklyorSpinner() {
-    if (this.state.loading) {
-        return <View style={styles['WeeklyOverview']}>
-              <ActivityIndicator color='#FFFFFF' size='large' />
-        </View>
-    }
-    return <View style={styles['WeeklyOverview']}>
-      <Text style={styles['WeeklyOverview__title']}>{this.state.isSelecting ? 'Select Recipes' : 'Recipes This Week'}</Text>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <FlatList
-          data={this.state.weeklyPlan}
-          extraData={this.state}
-          renderItem={
-            ({item, index}) =>
-              <DailyOverviewCard key={index}
-                                 day={index}
-                             recipes={item}
-                          navigation={this.props.navigation}
-                         isSelecting={this.state.isSelecting}
-                            onSelect={this.selectRecipe.bind(this)}
-                          selections={this.state.selectedRecipes.slice(index*3, index*3+3)} />
-          }
-        />
-      </ScrollView>
-    </View>;
-  }
-
   submitSelection(onBack) {
     let selections = this.state.selectedRecipes.filter((recipeId) => recipeId && recipeId >= 0).join();
     fetch(`http://souschef-182502.appspot.com/api/v1/users/shopping_list_create?user_id=${firebase.auth().currentUser.uid}&recipe_ids=${selections}`)
@@ -145,26 +119,49 @@ export default class WeeklyOverviewView extends View {
       });
   }
 
+  generateNewRecipe() {
+    this.setState({
+      loading: true,
+    });
+    fetch(`https://souschef-182502.appspot.com/api/v1/users/weekly_plan_create?user_id=${firebase.auth().currentUser.uid}`)
+      .then(this.updateWeeklyPlan.bind(this));
+  }
+
   render() {
     return (
       <View style={styles['WeeklyOverview']}>
         <Text style={styles['WeeklyOverview__title']}>{this.state.isSelecting ? 'Select Recipes' : 'Recipes This Week'}</Text>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <FlatList
-            data={this.state.weeklyPlan}
-            extraData={this.state}
-            renderItem={
-              ({item, index}) =>
-                <DailyOverviewCard key={index}
-                                   day={index}
-                               recipes={item}
-                            navigation={this.props.navigation}
-                           isSelecting={this.state.isSelecting}
-                              onSelect={this.selectRecipe.bind(this)}
-                            selections={this.state.selectedRecipes.slice(index*3, index*3+3)} />
-            }
-          />
+        <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollContainer}>
+          {this.state.loading ? (
+            <View style={styles.activity}>
+              <ActivityIndicator color='#FFFFFF' size='large' />
+            </View>
+          ) : (
+            <FlatList
+              data={this.state.weeklyPlan}
+              extraData={this.state}
+              style={styles.daysList}
+              renderItem={
+                ({item, index}) =>
+                  <DailyOverviewCard key={index}
+                                     day={index}
+                                 recipes={item}
+                              navigation={this.props.navigation}
+                             isSelecting={this.state.isSelecting}
+                                onSelect={this.selectRecipe.bind(this)}
+                              selections={this.state.selectedRecipes.slice(index*3, index*3+3)} />
+              }
+            />
+          )}
         </ScrollView>
+        <LinearGradient colors={['rgba(6,152,141,0)', 'rgb(6,152,141)']} style={[styles.scrollMask,this.state.isSelecting && {bottom: 40}]} />
+        {!this.state.isSelecting && (
+          <TouchableHighlight style={styles.actionButton} onPress={this.generateNewRecipe.bind(this)} underlayColor="rgba(0,0,0,0.3)">
+            <View style={styles.generatePlanButton}>
+              <Text style={styles.generatePlanButtonText}>Generate New Weekly Plan</Text>
+            </View>
+          </TouchableHighlight>
+        )}
       </View>
     );
   }
@@ -197,8 +194,7 @@ const styles = StyleSheet.create({
   },
   'WeeklyOverview': {
     flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingHorizontal: 20,
     paddingBottom: 40,
     backgroundColor: '#06988D',
     alignItems: 'flex-start',
@@ -210,5 +206,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingTop: 5,
     paddingBottom: 20,
+  },
+  daysList: {
+    paddingBottom: 30,
+  },
+  scrollMask: {
+    flex: 1,
+    position: 'absolute',
+    bottom: 90,
+    width: Dimensions.get('window').width - 40,
+    height: 30,
+    marginHorizontal: 20,
+  },
+  activity: {
+    width: Dimensions.get('window').width - 40,
+    height: Dimensions.get('window').height - 250,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionButton: {
+    width: Dimensions.get('window').width - 40,
+    height: 50,
+    borderRadius: 10,
+    marginTop: 20,
+    marginBottom: -20,
+  },
+  generatePlanButton: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  generatePlanButtonText: {
+    color: 'white',
+    fontSize: 17,
+    textAlign: 'center',
   },
 });
