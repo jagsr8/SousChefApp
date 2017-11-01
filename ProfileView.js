@@ -80,6 +80,8 @@ export default class ProfileView extends View {
   }
 
   updateDietaryPreferences(onBack) {
+      const {navigate, state, goBack} = this.props.navigation;
+
       this.setState({ error: '', loading: true });
       var uid = firebase.auth().currentUser.uid;
       var call = 'https://souschef-182502.appspot.com/api/v1/users/update_profile?user_id='+uid;
@@ -99,8 +101,12 @@ export default class ProfileView extends View {
           .then(() => {
               fetch('https://souschef-182502.appspot.com/api/v1/users/weekly_plan_create?user_id='+uid)
                   .then(() => {
-                      onBack();
-                      this.props.navigation.goBack();
+                      if(state.params.mode && state.params.mode === 'onboarding') {
+                        navigate('Overview', {});
+                      } else {
+                        onBack();
+                        goBack();
+                      }
                   })
           })
           .catch((error) => {
@@ -211,10 +217,12 @@ export default class ProfileView extends View {
                   </TouchableOpacity>
              </View>
           </View>
-          <TouchableOpacity style={styles.buttonContainer}
-              onPress={this.logout.bind(this)}>
-              <Text style={styles.buttonText}>Log Out</Text>
-          </TouchableOpacity>
+          {(!state.params.mode || state.params.mode !== 'onboarding') && (
+            <TouchableOpacity style={styles.buttonContainer}
+                onPress={this.logout.bind(this)}>
+                <Text style={styles.buttonText}>Log Out</Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>;
   }
