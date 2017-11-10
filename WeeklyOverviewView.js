@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Dimensions, Text, ActivityIndicator, View, ScrollView, FlatList, Button, Image, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
-import { LinearGradient } from 'expo';
 import firebase from 'firebase';
 import DailyOverviewCard from './DailyOverviewCard.js';
 import profileIcon from './images/profile.png';
@@ -154,7 +153,6 @@ export default class WeeklyOverviewView extends View {
             />
           )}
         </ScrollView>
-        <LinearGradient colors={['rgba(6,152,141,0)', 'rgb(6,152,141)']} style={[styles.scrollMask,this.state.isSelecting && {bottom: 40}]} />
         {!this.state.isSelecting && (
           <TouchableHighlight style={styles.actionButton} onPress={this.generateNewRecipe.bind(this)} underlayColor="rgba(0,0,0,0.3)">
             <View style={styles.generatePlanButton}>

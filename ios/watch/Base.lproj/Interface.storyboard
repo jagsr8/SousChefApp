@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="13196" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
+    <device id="watch38" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="watchOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="13051"/>
+    </dependencies>
+    <scenes>
+        <!--Interface Controller-->
+        <scene sceneID="aou-V4-d1y">
+            <objects>
+                <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="watch" customModuleProvider="target">
+                    <items>
+                        <label width="1" height="0.40000000000000002" alignment="left" text="Please login to Sous Chef Mobile App" textAlignment="center" numberOfLines="3" id="cAP-1r-aPy">
+                            <fontDescription key="font" type="system" weight="thin" pointSize="16"/>
+                        </label>
+                        <label width="136" height="51.5" alignment="center" hidden="YES" text="Use the app to change this message" textAlignment="center" numberOfLines="0" id="d17-oj-qpi">
+                            <accessibilityTraits key="accessibilityTraits" staticText="YES" updatesFrequently="YES"/>
+                            <fontDescription key="font" type="system" pointSize="14"/>
+                        </label>
+                        <button width="1" alignment="left" hidden="YES" title="Button" id="a60-ll-UHW">
+                            <connections>
+                                <segue destination="Yk6-Jd-TeZ" kind="push" id="opZ-et-gCD"/>
+                            </connections>
+                        </button>
+                        <label width="136" height="23.5" alignment="center" hidden="YES" text="0 Pongs" textAlignment="center" numberOfLines="0" id="5jo-BZ-Eqm">
+                            <accessibilityTraits key="accessibilityTraits" staticText="YES" updatesFrequently="YES"/>
+                            <fontDescription key="font" type="boldSystem" pointSize="14"/>
+                        </label>
+                        <imageView height="0.59999999999999998" alignment="left" image="logo" contentMode="scaleAspectFit" id="4j7-sx-KhQ"/>
+                    </items>
+                    <connections>
+                        <outlet property="image" destination="4j7-sx-KhQ" id="Br9-Ny-K13"/>
+                        <outlet property="label" destination="d17-oj-qpi" id="KBf-Um-y2r"/>
+                        <outlet property="pongs" destination="5jo-BZ-Eqm" id="iSv-Dk-d38"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="6" y="321"/>
+        </scene>
+        <!--Glance Interface Controller-->
+        <scene sceneID="BOz-TT-tkC">
+            <objects>
+                <glanceController spacing="0.0" id="0uZ-2p-rRc" customClass="GlanceController" customModule="watch" customModuleProvider="target">
+                    <items>
+                        <group alignment="left" id="t8f-Gd-c4y"/>
+                        <group alignment="left" id="uCw-4Q-Ouw"/>
+                    </items>
+                    <edgeInsets key="margins" left="0.0" right="0.0" top="0.0" bottom="14"/>
+                </glanceController>
+            </objects>
+            <point key="canvasLocation" x="235" y="672"/>
+        </scene>
+        <!--Directions-->
+        <scene sceneID="SLa-WJ-uDj">
+            <objects>
+                <controller identifier="Directions" id="YFe-cZ-PgT" customClass="DirectionsInterfaceController" customModule="watch_Extension">
+                    <items>
+                        <group width="1" alignment="left" id="Kot-fg-jKe">
+                            <items>
+                                <label width="1" alignment="left" text="Loading..." textAlignment="left" numberOfLines="0" minimumScaleFactor="0.29999999999999999" id="8YG-rq-PYb">
+                                    <fontDescription key="font" type="system" pointSize="12"/>
+                                </label>
+                            </items>
+                        </group>
+                        <group width="1" alignment="left" verticalAlignment="bottom" id="XWB-qU-1ax">
+                            <items>
+                                <button width="0.5" height="25" alignment="left" verticalAlignment="bottom" title="Back" id="Wub-Hg-JQE">
+                                    <fontDescription key="font" type="system" pointSize="12"/>
+                                    <connections>
+                                        <action selector="backButtonClick" destination="YFe-cZ-PgT" id="wxl-D6-5VN"/>
+                                    </connections>
+                                </button>
+                                <button width="0.5" height="25" alignment="right" verticalAlignment="bottom" title="Next" id="xVZ-pC-8Mk">
+                                    <fontDescription key="font" type="system" pointSize="12"/>
+                                    <connections>
+                                        <action selector="nextButtonClick" destination="YFe-cZ-PgT" id="epM-yM-XK1"/>
+                                    </connections>
+                                </button>
+                            </items>
+                        </group>
+                    </items>
+                    <connections>
+                        <outlet property="backButton" destination="Wub-Hg-JQE" id="3Ti-fb-STf"/>
+                        <outlet property="directionsLabel" destination="8YG-rq-PYb" id="jOb-jV-b5k"/>
+                        <outlet property="nextButton" destination="xVZ-pC-8Mk" id="zhN-6A-ncJ"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="594" y="153"/>
+        </scene>
+        <!--Static Notification Interface Controller-->
+        <scene sceneID="AEw-b0-oYE">
+            <objects>
+                <notificationController id="YCC-NB-fut">
+                    <items>
+                        <label alignment="left" text="Alert Label" id="XkS-y5-khE"/>
+                    </items>
+                    <notificationCategory key="notificationCategory" identifier="myCategory" id="JfB-70-Muf"/>
+                    <connections>
+                        <outlet property="notificationAlertLabel" destination="XkS-y5-khE" id="49B-RR-99y"/>
+                        <segue destination="gdX-wl-uQE" kind="relationship" relationship="dynamicNotificationInterface" id="fKh-qV-3T2"/>
+                    </connections>
+                </notificationController>
+            </objects>
+            <point key="canvasLocation" x="235" y="1001"/>
+        </scene>
+        <!--Notification Controller-->
+        <scene sceneID="KIl-fV-djm">
+            <objects>
+                <controller id="gdX-wl-uQE" customClass="NotificationController" customModule="watch" customModuleProvider="target"/>
+            </objects>
+            <point key="canvasLocation" x="553" y="1001"/>
+        </scene>
+        <!--ShoppingList-->
+        <scene sceneID="HID-88-0Et">
+            <objects>
+                <controller identifier="ShoppingList" id="pbE-lL-QhE" customClass="ShoppingListInterfaceController" customModule="watch_Extension">
+                    <items>
+                        <table alignment="left" id="NZn-Kh-ucA">
+                            <items>
+                                <tableRow identifier="ShoppingListRowType" id="uoI-qQ-7DH" customClass="ShoppingListRowType" customModule="watch_Extension">
+                                    <group key="rootItem" width="1" height="41" alignment="left" id="DO3-bg-2Mh">
+                                        <items>
+                                            <button alignment="left" id="FuR-sG-oUu">
+                                                <connections>
+                                                    <action selector="checkButtonOnClick" destination="uoI-qQ-7DH" id="2Gy-1d-Y5k"/>
+                                                </connections>
+                                            </button>
+                                            <group width="1" height="41" alignment="left" id="kMy-iG-Pch">
+                                                <items>
+                                                    <button alignment="left" id="97l-VJ-C86">
+                                                        <group key="contentGroup" width="128" height="41" alignment="left" id="OdN-H6-BBm">
+                                                            <items>
+                                                                <group width="88" alignment="left" layout="vertical" id="31l-rD-ppd">
+                                                                    <items>
+                                                                        <label height="0.65000000000000002" alignment="left" text="Label" numberOfLines="2" minimumScaleFactor="0.40000000000000002" id="3A0-gl-Fpt">
+                                                                            <fontDescription key="font" type="system" weight="medium" pointSize="9"/>
+                                                                        </label>
+                                                                        <label height="0.25" heightAdjustment="1" alignment="left" text="Label" id="edj-Pu-ZQM">
+                                                                            <fontDescription key="font" type="system" weight="light" pointSize="9"/>
+                                                                        </label>
+                                                                    </items>
+                                                                </group>
+                                                                <group width="30" height="30" alignment="right" verticalAlignment="center" radius="15" id="qbM-sZ-QBn">
+                                                                    <items>
+                                                                        <imageView width="30" height="30" alignment="right" verticalAlignment="center" id="BFc-WI-6oU"/>
+                                                                    </items>
+                                                                </group>
+                                                            </items>
+                                                        </group>
+                                                        <connections>
+                                                            <action selector="checkButtonOnClick" destination="uoI-qQ-7DH" id="s5X-cM-gQY"/>
+                                                        </connections>
+                                                    </button>
+                                                </items>
+                                            </group>
+                                        </items>
+                                    </group>
+                                    <connections>
+                                        <outlet property="checkBoxImage" destination="BFc-WI-6oU" id="TUR-qm-Tl1"/>
+                                        <outlet property="itemNameLabel" destination="3A0-gl-Fpt" id="WO1-yO-KNh"/>
+                                        <outlet property="itemQuantityLabel" destination="edj-Pu-ZQM" id="eN3-Oh-405"/>
+                                        <outlet property="shoppingRow" destination="DO3-bg-2Mh" id="jaw-aq-65U"/>
+                                    </connections>
+                                </tableRow>
+                                <tableRow identifier="ShoppingListHeader" id="Hiz-c4-37h" customClass="ShoppingListHeaderType" customModule="watch_Extension">
+                                    <group key="rootItem" width="1" height="25" alignment="left" id="5uC-DK-bqe">
+                                        <items>
+                                            <group width="1" height="30" alignment="left" id="XdX-va-drj">
+                                                <items>
+                                                    <label width="133" height="29" alignment="left" text="Label" textAlignment="center" id="43h-TQ-Utu">
+                                                        <color key="textColor" red="0.029252282800000001" green="0.7955946116" blue="0.74341159359999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <fontDescription key="font" type="system" weight="semibold" pointSize="12"/>
+                                                    </label>
+                                                </items>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            </group>
+                                        </items>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    </group>
+                                    <connections>
+                                        <outlet property="headerLabel" destination="43h-TQ-Utu" id="nZS-Zc-yF9"/>
+                                    </connections>
+                                </tableRow>
+                            </items>
+                        </table>
+                    </items>
+                    <connections>
+                        <outlet property="shoppingListTable" destination="NZn-Kh-ucA" id="5sb-Pj-gfH"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="594" y="462"/>
+        </scene>
+        <!--Home-->
+        <scene sceneID="2TF-8g-CPV">
+            <objects>
+                <controller identifier="Home" id="Yk6-Jd-TeZ" customClass="HomeInterfaceController" customModule="watch_Extension">
+                    <items>
+                        <label height="0.0" alignment="center" text="Sous Chef" id="Zq0-lC-PsE">
+                            <fontDescription key="font" type="system" weight="ultraLight" pointSize="14"/>
+                        </label>
+                        <imageView height="61" alignment="left" image="logo_icon" contentMode="scaleAspectFit" id="dH8-ez-ph8"/>
+                        <button width="1" height="30" alignment="left" title="Start Cooking" id="pEw-G2-uO0">
+                            <connections>
+                                <segue destination="YFe-cZ-PgT" kind="push" id="XPL-Kc-0oG"/>
+                            </connections>
+                        </button>
+                        <button width="1" height="30" alignment="left" title="Shopping List" id="vgY-Du-FpN">
+                            <connections>
+                                <segue destination="pbE-lL-QhE" kind="push" id="btH-Nr-l20"/>
+                            </connections>
+                        </button>
+                    </items>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="313" y="321"/>
+        </scene>
+    </scenes>
+</document>

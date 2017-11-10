@@ -1,6 +1,5 @@
 import React from 'react';
 import { AppRegistry, StyleSheet, Dimensions, Text, View, Button, Image, FlatList, ScrollView, SectionList, TouchableWithoutFeedback} from 'react-native';
-import { LinearGradient } from 'expo';
 import firebase from 'firebase';
 import ShoppingCategoryCard from './ShoppingCategoryCard.js';
 import filterIcon from './images/filter.png';
@@ -191,7 +190,6 @@ export default class ShoppingListView extends React.Component {
               </View>
           }
         </ScrollView>
-        <LinearGradient colors={['rgba(6,152,141,0)', 'rgb(6,152,141)']} style={styles.scrollMask} />
       </View>
     );
   }

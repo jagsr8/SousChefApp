@@ -59,6 +59,7 @@ export default class StartUpView extends React.Component {
     }
   }
 
+
   componentWillMount() {
     const firebaseConfig = {
       apiKey: "AIzaSyCaH5KTQyiFCdK9b49MAMO-IYynWLy0vZA",

@@ -1,7 +1,6 @@
 import React from 'react';
 import { AppRegistry, ActivityIndicator, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar, TouchableHighlight} from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import { LinearGradient } from 'expo';
 import firebase from 'firebase';
 
 function getDiet(responseJson) {
@@ -123,9 +122,7 @@ export default class RecipeDetailsView extends React.Component {
               resizeMode={'cover'}
               source={{uri: this.state.dataSource.image}}
             />
-            <LinearGradient colors={['rgba(0,0,0,0.5)', 'transparent', 'rgba(0,0,0,1)']} style={styles.imageMask}>
               <Text style={styles.title}>{this.state.dataSource.title}</Text>
-            </LinearGradient>
           </View>
 
           <View style={styles.detailBar}>
@@ -162,7 +159,6 @@ export default class RecipeDetailsView extends React.Component {
           </View>
         </ScrollView>
 
-        <LinearGradient colors={['rgba(6,152,141,0)', 'rgb(6,152,141)']} style={styles.scrollMask} />
 
         <TouchableHighlight style={styles.actionButton} onPress={() => changeRecipeClicked(this.props.navigation)} underlayColor="rgba(0,0,0,0.3)">
           <View style={styles.changeRecipeButton}>
