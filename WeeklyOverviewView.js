@@ -4,6 +4,21 @@ import firebase from 'firebase';
 import DailyOverviewCard from './DailyOverviewCard.js';
 import profileIcon from './images/profile.png';
 import shoppingCart from './images/shopping-cart.png';
+var watch = require('react-native-watch-connectivity')
+
+function sendUsername(text) {
+    if (text != null && text.trim().length) {
+      const timestamp = new Date().getTime()
+      watch.sendMessage({text, timestamp}, (err, resp) => {
+        if (!err) {
+          console.log('response received', resp)
+        }
+        else {
+          console.log('error sending message to watch')
+        }
+      })
+    }
+}  
 
 export default class WeeklyOverviewView extends View {
   static navigationOptions = ({ navigation }) => {
@@ -63,6 +78,7 @@ export default class WeeklyOverviewView extends View {
       selectedRecipes: [],
     };
 
+    sendUsername(firebase.auth().currentUser.uid);
   }
 
   componentDidMount() {

@@ -7,24 +7,25 @@
     "build": "babel Libraries/RNWatch/RNWatch.ios.js > Libraries/RNWatch/RNWatch.ios.build.js"
   },
   "dependencies": {
+    "babel-preset-expo": "^4.0.0",
     "firebase": "^4.6.0",
     "react": "16.0.0-alpha.12",
     "react-native": "^0.48.4",
+    "react-native-camera": "^0.6.0",
     "react-native-check-box": "^2.0.2",
+    "react-native-image-picker": "^0.25.6",
+    "react-native-spinkit": "^1.0.2",
     "react-native-tag-input": "0.0.17",
     "react-native-tags": "^0.2.0",
-    "react-navigation": "^1.0.0-beta.13",
-    "react-native-camera": "^0.6.0",
-    "react-native-image-picker": "^0.25.6",
-    "react-native-spinkit": "^1.0.2"
+    "react-navigation": "^1.0.0-beta.13"
   },
   "devDependencies": {
     "babel-jest": "18.0.0",
     "babel-preset-react-native": "1.9.1",
     "babel-preset-react-native-stage-0": "1.0.1",
     "jest": "18.1.0",
-    "react-test-renderer": "15.4.2",
-    "react-native-scripts": "1.5.0"
+    "react-native-scripts": "1.5.0",
+    "react-test-renderer": "15.4.2"
   },
   "jest": {
     "preset": "react-native"

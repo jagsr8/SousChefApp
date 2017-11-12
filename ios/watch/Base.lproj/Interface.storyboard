@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="13196" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="13529" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
     <device id="watch38" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="watchOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="13051"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="13507"/>
     </dependencies>
     <scenes>
         <!--Interface Controller-->
@@ -59,9 +59,16 @@
             <objects>
                 <controller identifier="Directions" id="YFe-cZ-PgT" customClass="DirectionsInterfaceController" customModule="watch_Extension">
                     <items>
+                        <group width="1" alignment="left" id="Idz-4F-cpv">
+                            <items>
+                                <label alignment="left" text="Loading..." numberOfLines="3" id="WPO-ez-G4W">
+                                    <fontDescription key="font" type="system" weight="semibold" pointSize="12"/>
+                                </label>
+                            </items>
+                        </group>
                         <group width="1" alignment="left" id="Kot-fg-jKe">
                             <items>
-                                <label width="1" alignment="left" text="Loading..." textAlignment="left" numberOfLines="0" minimumScaleFactor="0.29999999999999999" id="8YG-rq-PYb">
+                                <label width="1" alignment="left" textAlignment="left" numberOfLines="0" minimumScaleFactor="0.29999999999999999" id="8YG-rq-PYb">
                                     <fontDescription key="font" type="system" pointSize="12"/>
                                 </label>
                             </items>
@@ -87,6 +94,7 @@
                         <outlet property="backButton" destination="Wub-Hg-JQE" id="3Ti-fb-STf"/>
                         <outlet property="directionsLabel" destination="8YG-rq-PYb" id="jOb-jV-b5k"/>
                         <outlet property="nextButton" destination="xVZ-pC-8Mk" id="zhN-6A-ncJ"/>
+                        <outlet property="recipeTitleLabel" destination="WPO-ez-G4W" id="Skx-hj-WFv"/>
                     </connections>
                 </controller>
             </objects>

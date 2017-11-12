@@ -1,7 +1,8 @@
 import React from 'react';
-import { AppRegistry, ActivityIndicator, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar, TouchableHighlight} from 'react-native';
+import { AppRegistry, ActivityIndicator, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar, TouchableHighlight, Alert} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import firebase from 'firebase';
+var watch = require('react-native-watch-connectivity')
 
 function getDiet(responseJson) {
   diet = {
@@ -13,6 +14,20 @@ function getDiet(responseJson) {
   }
   return Object.entries(diet).filter((item) => item[1]).map((item) => item[0]).join(', ');
 }
+
+function sendUsername(text) {
+    if (text != null && text.trim().length) {
+      const timestamp = new Date().getTime()
+      watch.sendMessage({text, timestamp}, (err, resp) => {
+        if (!err) {
+          console.log('response received', resp)
+        }
+        else {
+          console.log('error sending message to watch')
+        }
+      })
+    }
+}  
 
 function getIngredients(responseJson) {
   try {
@@ -68,6 +83,23 @@ async function changeRecipe(navigate) {
     });
 }
 
+async function startCookingClicked(navigate) {
+  return fetch(`https://souschef-182502.appspot.com/api/v1/users/save_current_recipe_progress?user_id=${firebase.auth().currentUser.uid}&step=1&recipe_id=${navigate.state.params.recipeId}`)
+    .then((responseJson) => {
+      Alert.alert(
+        'Successfully Saved Current Recipe',
+        'Please open Apple Watch app or open Alexa Skill: "MySousChef" to start cooking!',
+        [
+          {text: 'OK', onPress: () => console.log('OK Pressed')},
+        ],
+        { cancelable: false }
+      )
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
 export default class RecipeDetailsView extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const {navigate, state, setParams} = navigation;
@@ -83,6 +115,7 @@ export default class RecipeDetailsView extends React.Component {
     this.state = {
       isLoading: true
     }
+    sendUsername(firebase.auth().currentUser.uid);
   }
 
   componentDidMount() {
@@ -166,11 +199,11 @@ export default class RecipeDetailsView extends React.Component {
           </View>
         </TouchableHighlight>
 
-        {/*<TouchableHighlight style={styles.actionButton} onPress={() => {}} underlayColor="rgba(0,0,0,0.3)">
+        {<TouchableHighlight style={styles.actionButton} onPress={() => startCookingClicked(this.props.navigation)} underlayColor="rgba(0,0,0,0.3)">
           <View style={styles.startCookingButton}>
-            <Text style={styles.startCookingButtonText}>Start Cooking</Text>
+            <Text style={styles.startCookingButtonText}>Start Cooking on Alexa or Watch</Text>
           </View>
-        </TouchableHighlight>*/}
+        </TouchableHighlight>}
 
       </View>
     );

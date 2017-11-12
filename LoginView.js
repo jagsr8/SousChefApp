@@ -61,24 +61,19 @@ const styles = StyleSheet.create({
 });
 
 
-function sendMessage(text) {
-    if (text.trim().length) {
+function sendUsername(text) {
+    if (text != null && text.trim().length) {
       const timestamp = new Date().getTime()
-
       watch.sendMessage({text, timestamp}, (err, resp) => {
         if (!err) {
           console.log('response received', resp)
-          const timeTakenToReachWatch = resp.elapsed
-          const timeTakenToReply      = new Date().getTime() - parseInt(resp.timestamp)
         }
         else {
-          console.error('error sending message to watch', err)
+          console.log('error sending message to watch')
         }
       })
     }
 }  
-
-
 
 export default class LoginView extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -91,23 +86,6 @@ export default class LoginView extends React.Component {
     };
   };
 
-  receiveWatchReachability (err, reachable) {
-    if (!err) {
-      console.log('received watch reachability', reachable)
-      //this.configureNextAnimation()
-      //this.setState({reachable})
-    }
-    else {
-      console.error('error receiving watch reachability', err)
-    }
-  }
-
-  subscribeToWatchEvents () {
-    this.subscriptions = [
-      watch.subscribeToWatchReachability(::this.receiveWatchReachability),
-    ]
-  }
-
   constructor(props) {
     super(props);
     this.state = {
@@ -117,7 +95,7 @@ export default class LoginView extends React.Component {
       loading: false,
       error: false,
     }
-    this.subscribeToWatchEvents()
+
   }
 
   login() {
@@ -125,8 +103,8 @@ export default class LoginView extends React.Component {
       const { email, password } = this.state;
       firebase.auth().signInWithEmailAndPassword(email, password)
                   .then((userData) => {
-                      this.setState({ error: '', loading: false });
-                      sendMessage(firebase.auth().currentUser.uid);
+                    this.setState({ error: '', loading: false });
+                      sendUsername(firebase.auth().currentUser.uid);
                       this.props.navigation.navigate('Overview', {});
                   })
                   .catch((error) => {
