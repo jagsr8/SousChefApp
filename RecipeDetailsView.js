@@ -155,7 +155,9 @@ export default class RecipeDetailsView extends React.Component {
               resizeMode={'cover'}
               source={{uri: this.state.dataSource.image}}
             />
+            <View style={styles.imageMask}>
               <Text style={styles.title}>{this.state.dataSource.title}</Text>
+            </View>
           </View>
 
           <View style={styles.detailBar}>

@@ -48,9 +48,9 @@ class DirectionsInterfaceController: WKInterfaceController {
       }else{
         do{
           let json = try JSONSerialization.jsonObject(with: data!, options:.allowFragments) as! [String : AnyObject]
-          let recipeId = json["recipe_id"] as! String
+          let recipeId = String(json["recipe_id"] as! Int)
           self.currentRecipeID = recipeId
-          let step = json["step"] as! String
+          let step = String(json["step"] as! Int)
           self.currElement = Int(step)!
           self.getRecipeDirections(recipeId: recipeId)
           
