@@ -7,7 +7,7 @@ import starFilledIcon from './images/star-filled.png';
 var watch = require('react-native-watch-connectivity')
 
 function getDiet(responseJson) {
-  diet = {
+  const diet = {
     'Vegan': responseJson.vegan,
     'Vegetarian': responseJson.vegetarian,
     'Keto': responseJson.ketogenic,
@@ -15,6 +15,11 @@ function getDiet(responseJson) {
     'Low Fodmap': responseJson.lowFodmap,
   }
   return Object.entries(diet).filter((item) => item[1]).map((item) => item[0]).join(', ');
+}
+
+function getCalories(responseJson) {
+  const calories = responseJson.nutrition.nutrients.find((item) => item.title === "Calories");
+  return `${Math.round(calories.amount)} ${calories.unit}`;
 }
 
 function sendUsername(text) {
@@ -127,6 +132,7 @@ export default class RecipeDetailsView extends React.Component {
       .then((responseJson) => {
         //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         responseJson["diet"] = getDiet(responseJson);
+        responseJson["calories"] = getCalories(responseJson);
         responseJson["ingredients"] = getIngredients(responseJson);
         responseJson["directions"] = getDirections(responseJson);
         fetch(`https://souschef-182502.appspot.com/api/v1/users/get_favorites?user_id=${firebase.auth().currentUser.uid}`)
@@ -186,10 +192,10 @@ export default class RecipeDetailsView extends React.Component {
           </View>
 
           <View style={styles.detailBar}>
-            <Text style = {styles.detailBarText}>{`${this.state.dataSource.readyInMinutes} min`}</Text>
-            <Text style = {styles.detailBarText}></Text>
-            <Text style = {styles.detailBarText}></Text>
-            <Text style = {styles.detailBarText}>{this.state.dataSource.diet}</Text>
+            <Text style={styles.detailBarText}>{`${this.state.dataSource.readyInMinutes} min`}</Text>
+            {/*<Text style={styles.detailBarText}></Text>*/}
+            <Text style={styles.detailBarText}>{this.state.dataSource.calories}</Text>
+            <Text style={styles.detailBarText}>{this.state.dataSource.diet}</Text>
           </View>
 
           <View style={styles.sectionCard}>
