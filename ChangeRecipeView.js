@@ -4,6 +4,8 @@ import { StackNavigator } from 'react-navigation';
 const win = Dimensions.get('window');
 import firebase from 'firebase';
 import chevronRight from './images/chevron-right.png';
+import starIcon from './images/star.png';
+import starFilledIcon from './images/star-filled.png';
 
 
 const styles = StyleSheet.create({
@@ -162,10 +164,20 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
   },
-  'DailyOverviewCard__recipeMeal': {
+  'DailyOverviewCard__recipeDetailHeader': {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  'DailyOverviewCard__recipeDetail': {
     color: '#FFF',
     textAlign: 'left',
     fontSize: 13,
+    marginRight: 10,
+    marginBottom: 2,
+  },
+  'DailyOverviewCard__favoriteIcon': {
+    height: 13,
+    width: 13,
     marginBottom: 2,
   },
   'DailyOverviewCard__recipeName': {
@@ -181,53 +193,6 @@ const styles = StyleSheet.create({
 
   },
 });
-
- function getDiet(responseJson) {
-    diet = ""
-    if (responseJson.vegan) {
-      diet += "Vegan ";
-    }
-    if (responseJson.vegetarian) {
-      diet += "Vegetarian ";
-    }
-    if (responseJson.ketogenic) {
-      diet += "Keto ";
-    }
-    if (responseJson.glutenFree) {
-      diet += "Gluten Free ";
-    }
-    if (responseJson.lowFodmap) {
-      diet += "Low Fodmap ";
-    }
-    return diet;
-}
-
- function getIngredients(responseJson) {
-    extendedIngredients = responseJson.extendedIngredients;
-    ingredientsJSON = []
-    for (i = 0; i < extendedIngredients.length; i++) {
-      ingredientsJSON.push({
-        key: extendedIngredients[i].name,
-        value: extendedIngredients[i].amount + " " + extendedIngredients[i].unitShort
-      })
-    }
-    return ingredientsJSON;
-  }
-
- function getDirections(responseJson) {
-    analyzedInstructions = responseJson.analyzedInstructions[0].steps;
-    console.log(analyzedInstructions);
-    instructionsJSON = []
-    for (i = 0; i < analyzedInstructions.length; i++) {
-      instructionsJSON.push({
-        key: analyzedInstructions[i].number + ". " + analyzedInstructions[i].step,
-      })
-    }
-    console.log(instructionsJSON);
-    return instructionsJSON;
-  }
-
-
 
 
 class ChangeRecipeView extends React.Component {
@@ -247,23 +212,28 @@ class ChangeRecipeView extends React.Component {
     }
   }
 
-
-
   componentDidMount() {
     return fetch(`https://souschef-182502.appspot.com/api/v1/recipes/recipe_changes?user_id=${firebase.auth().currentUser.uid}&offset=0&meal_type=${this.props.navigation.state.params.meal.toLowerCase()}`)
       .then((response) => response.json())
       .then((responseJson) => {
-        //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        for (i = 0; i < responseJson.results.length; i++) {
-          responseJson.results[i]["key"] = i;
-        }
+        fetch(`https://souschef-182502.appspot.com/api/v1/users/get_favorites?user_id=${firebase.auth().currentUser.uid}`)
+          .then((response) => response.json())
+          .then((favorites) => {
+            //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+            responseJson.results = responseJson.results.map((item, index) => {
+              item.key = index;
+              item.isFavorite = favorites[item.id];
+              return item;
+            });
 
-        this.setState({
-          isLoading: false,
-          dataSource: (responseJson),
-        }, function() {
-          // do something with new state
-        });
+            this.setState({
+              isLoading: false,
+              dataSource: (responseJson),
+            });
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       })
       .catch((error) => {
         console.error(error);
@@ -281,16 +251,16 @@ class ChangeRecipeView extends React.Component {
     }
     return (
       <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-            <Text
-        style= {styles.headerText}>
-        Select a New Recipe for {this.props.navigation.state.params.meal}
-        </Text>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Text
+            style= {styles.headerText}>
+            Select a New Recipe for {this.props.navigation.state.params.meal}
+          </Text>
           <FlatList
             data={this.state.dataSource.results}
             renderItem={
               ({item, index}) =>
-                 <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
+                <TouchableHighlight style={styles['DailyOverviewCard__recipeButton']}
                         underlayColor="rgba(0,0,0,0.08)"
                               onPress={() => {
                                 this.props.navigation.navigate('Recipe', {
@@ -300,25 +270,31 @@ class ChangeRecipeView extends React.Component {
                                   isRecipeChange: true,
                                 })
                               }}>
-              <View style={styles['DailyOverviewCard__recipe']}>
-                <Image source={{uri: 'https://spoonacular.com/recipeImages/' + item.image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} />
-                <View style={styles['DailyOverviewCard__recipeText']}>
-                  <Text style={styles['DailyOverviewCard__recipeMeal']}>
-                    {item.readyInMinutes} min
-                  </Text>
-                  <Text numberOfLines={1} style={styles['DailyOverviewCard__recipeName']}>
-                    {item.title}
-                  </Text>
-                </View>
-                <Image source={chevronRight} style={styles['DailyOverviewCard__rightChevron']} />
-              </View>
-            </TouchableHighlight>
+                  <View style={styles['DailyOverviewCard__recipe']}>
+                    <Image source={{uri: 'https://spoonacular.com/recipeImages/' + item.image}} resizeMode="cover" style={styles['DailyOverviewCard__recipeImage']} />
+                    <View style={styles['DailyOverviewCard__recipeText']}>
+                      <View style={styles['DailyOverviewCard__recipeDetailHeader']}>
+                        <Text style={styles['DailyOverviewCard__recipeDetail']}>
+                          {item.readyInMinutes} min
+                        </Text>
+                        {item.isFavorite && (
+                          <Image
+                            style={styles['DailyOverviewCard__favoriteIcon']}
+                            source={starFilledIcon}
+                          />
+                        )}
+                      </View>
+                      <Text numberOfLines={1} style={styles['DailyOverviewCard__recipeName']}>
+                        {item.title}
+                      </Text>
+                    </View>
+                    <Image source={chevronRight} style={styles['DailyOverviewCard__rightChevron']} />
+                  </View>
+                </TouchableHighlight>
             }
           />
         </ScrollView>
-
       </View>
-
     );
   }
 }
