@@ -1,7 +1,9 @@
 import React from 'react';
-import { AppRegistry, ActivityIndicator, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar, TouchableHighlight, Alert} from 'react-native';
+import { AppRegistry, ActivityIndicator, StyleSheet, Text, View, Button, Image, Dimensions, FlatList, ScrollView, StatusBar, TouchableHighlight, TouchableWithoutFeedback, Alert} from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import firebase from 'firebase';
+import starIcon from './images/star.png';
+import starFilledIcon from './images/star-filled.png';
 var watch = require('react-native-watch-connectivity')
 
 function getDiet(responseJson) {
@@ -119,19 +121,36 @@ export default class RecipeDetailsView extends React.Component {
   }
 
   componentDidMount() {
-    return fetch(`https://souschef-182502.appspot.com/api/v1/recipes/recipe_details?recipe_id=${this.props.navigation.state.params.recipeId}`)
+    const currentRecipeId = this.props.navigation.state.params.recipeId;
+    return fetch(`https://souschef-182502.appspot.com/api/v1/recipes/recipe_details?recipe_id=${currentRecipeId}`)
       .then((response) => response.json())
       .then((responseJson) => {
         //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         responseJson["diet"] = getDiet(responseJson);
         responseJson["ingredients"] = getIngredients(responseJson);
         responseJson["directions"] = getDirections(responseJson);
-        this.setState({
-          isLoading: false,
-          dataSource: (responseJson),
-        }, function() {
-          // do something with new state
-        });
+        fetch(`https://souschef-182502.appspot.com/api/v1/users/get_favorites?user_id=${firebase.auth().currentUser.uid}`)
+          .then((response) => response.json())
+          .then((favorites) => {
+            this.setState({
+              isLoading: false,
+              dataSource: (responseJson),
+              isFavorite: favorites && favorites[currentRecipeId],
+            });
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  updateFavorite() {
+    fetch(`https://souschef-182502.appspot.com/api/v1/users/${this.state.isFavorite ? 'delete' : 'add'}_favorite?user_id=${firebase.auth().currentUser.uid}&recipe_id=${this.state.dataSource.id}`)
+      .then(() => {
+        this.setState({ isFavorite: !this.state.isFavorite })
       })
       .catch((error) => {
         console.error(error);
@@ -157,6 +176,12 @@ export default class RecipeDetailsView extends React.Component {
             />
             <View style={styles.imageMask}>
               <Text style={styles.title}>{this.state.dataSource.title}</Text>
+              <TouchableWithoutFeedback onPress={this.updateFavorite.bind(this)}>
+                <Image
+                  style={styles.favoriteIcon}
+                  source={this.state.isFavorite ? starFilledIcon : starIcon}
+                />
+              </TouchableWithoutFeedback>
             </View>
           </View>
 
@@ -249,6 +274,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
+    flex: 1,
     color: 'white',
     fontSize: 34,
     fontWeight: 'bold',
@@ -260,6 +286,12 @@ const styles = StyleSheet.create({
       height: 0
     },
     shadowOpacity: 0.5,
+  },
+  favoriteIcon: {
+    height: 30,
+    width: 30,
+    marginLeft: 15,
+    marginBottom: 5,
   },
   detailBar: {
     flexDirection:'row',
