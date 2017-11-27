@@ -4,7 +4,6 @@ import { StackNavigator } from 'react-navigation';
 const win = Dimensions.get('window');
 import firebase from 'firebase';
 import chevronRight from './images/chevron-right.png';
-import starIcon from './images/star.png';
 import starFilledIcon from './images/star-filled.png';
 
 
