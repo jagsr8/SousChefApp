@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Dimensions, ActivityIndicator, Text, View, ScrollView, FlatList, Image, Picker, TouchableWithoutFeedback, TouchableHighlight, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native';
+import {Alert, StyleSheet, Dimensions, ActivityIndicator, Text, View, ScrollView, FlatList, Image, Picker, TouchableWithoutFeedback, TouchableHighlight, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native';
 import firebase from 'firebase';
 import TagInput from './TagInput.js';
 import chevronLeftIcon from './images/chevron-left.png';
@@ -140,6 +140,19 @@ export default class ProfileView extends View {
           });
   }
 
+  alexaConnect() {
+      fetch(`http://souschef-182502.appspot.com/api/v1/alexa/get_alexa_auth_token?user_id=${firebase.auth().currentUser.uid}`)
+        .then((response) => response.json())
+        .then((responseJson) => {
+            Alert.alert(
+                'Your Alexa passcode is ' + responseJson
+            );
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+  }
+
   renderTags() {
       return (<TagInput
            tagContainerStyle={styles.tagStyle}
@@ -217,6 +230,10 @@ export default class ProfileView extends View {
                   </TouchableOpacity>
              </View>
           </View>
+          <TouchableOpacity style={styles.buttonContainer}
+              onPress={this.alexaConnect.bind(this)}>
+              <Text style={styles.buttonText}>Connect Alexa</Text>
+          </TouchableOpacity>
           {(!state.params.mode || state.params.mode !== 'onboarding') && (
             <TouchableOpacity style={styles.buttonContainer}
                 onPress={this.logout.bind(this)}>
