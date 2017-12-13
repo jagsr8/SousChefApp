@@ -53,7 +53,7 @@ function changeRecipeClicked(navigate) {
 
 
 
-export default class RecipeDetailsView extends React.Component {
+export default class NutritionView extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const {navigate, state, setParams} = navigation;
     const {params} = state;
