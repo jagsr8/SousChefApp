@@ -4,24 +4,25 @@ import { StackNavigator } from 'react-navigation';
 import firebase from 'firebase';
 import starIcon from './images/star.png';
 import starFilledIcon from './images/star-filled.png';
-import infoIcon from './images/info.png';
-
 var watch = require('react-native-watch-connectivity')
 
-function getDiet(responseJson) {
-  const diet = {
-    'Vegan': responseJson.vegan,
-    'Vegetarian': responseJson.vegetarian,
-    'Keto': responseJson.ketogenic,
-    'Gluten Free': responseJson.glutenFree,
-    'Low Fodmap': responseJson.lowFodmap,
-  }
-  return Object.entries(diet).filter((item) => item[1]).map((item) => item[0]).join(', ');
-}
+function getNutrients(responseJson) {
 
-function getCalories(responseJson) {
-  const calories = responseJson.nutrition.nutrients.find((item) => item.title === "Calories");
-  return `${Math.round(calories.amount)} ${calories.unit}`;
+  try {
+    nutrients = responseJson.nutrition.nutrients;
+    nutrientsJSON = []
+    for (i = 0; i < nutrients.length; i++) {
+      nutrientsJSON.push({
+        key: i,
+        name: nutrients[i].title,
+        value: nutrients[i].amount + " " + nutrients[i].unit,
+        percent: nutrients[i].percentOfDailyNeeds + "%"
+      })
+    }
+    return nutrientsJSON;
+  } catch (e) {
+    return [];
+  }
 }
 
 function sendUsername(text) {
@@ -38,38 +39,6 @@ function sendUsername(text) {
     }
 }  
 
-function getIngredients(responseJson) {
-  try {
-    extendedIngredients = responseJson.extendedIngredients;
-    ingredientsJSON = []
-    for (i = 0; i < extendedIngredients.length; i++) {
-      ingredientsJSON.push({
-        key: i,
-        name: extendedIngredients[i].name,
-        value: extendedIngredients[i].amount + " " + extendedIngredients[i].unitShort
-      })
-    }
-    return ingredientsJSON;
-  } catch (e) {
-    return [];
-  }
-}
-
-function getDirections(responseJson) {
-  try {
-    analyzedInstructions = responseJson.analyzedInstructions[0].steps;
-    instructionsJSON = [];
-    for (i = 0; i < analyzedInstructions.length; i++) {
-      instructionsJSON.push({
-        key: analyzedInstructions[i].number + ". " + analyzedInstructions[i].step,
-      })
-    }
-    return instructionsJSON;
-  } catch (e) {
-    return [];
-  }
-}
-
 function changeRecipeClicked(navigate) {
   if(!navigate.state.params.isRecipeChange) {
     navigate.navigate("ChangeRecipe", {
@@ -82,40 +51,7 @@ function changeRecipeClicked(navigate) {
   }
 }
 
-function nutritionInfoClicked(navigate) {
-  navigate.navigate("Nutrition", {
-    recipeId: navigate.state.params.recipeId,
-    day: navigate.state.params.day,
-    meal: navigate.state.params.meal,
-  });
-}
 
-async function changeRecipe(navigate) {
-  return fetch(`https://souschef-182502.appspot.com/api/v1/users/update_meal?user_id=${firebase.auth().currentUser.uid}&day=${navigate.state.params.day}&meal=${navigate.state.params.meal}&recipe_id=${navigate.state.params.recipeId}`)
-    .then((responseJson) => {
-      navigate.navigate("Overview", {});
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-}
-
-async function startCookingClicked(navigate) {
-  return fetch(`https://souschef-182502.appspot.com/api/v1/users/save_current_recipe_progress?user_id=${firebase.auth().currentUser.uid}&step=1&recipe_id=${navigate.state.params.recipeId}`)
-    .then((responseJson) => {
-      Alert.alert(
-        'Successfully Saved Current Recipe',
-        'Please open Apple Watch app or open Alexa Skill: "MySousChef" to start cooking!',
-        [
-          {text: 'OK', onPress: () => console.log('OK Pressed')},
-        ],
-        { cancelable: false }
-      )
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-}
 
 export default class RecipeDetailsView extends React.Component {
   static navigationOptions = ({ navigation }) => {
@@ -137,14 +73,12 @@ export default class RecipeDetailsView extends React.Component {
 
   componentDidMount() {
     const currentRecipeId = this.props.navigation.state.params.recipeId;
+
     return fetch(`https://souschef-182502.appspot.com/api/v1/recipes/recipe_details?recipe_id=${currentRecipeId}`)
       .then((response) => response.json())
       .then((responseJson) => {
         //let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        responseJson["diet"] = getDiet(responseJson);
-        responseJson["calories"] = getCalories(responseJson);
-        responseJson["ingredients"] = getIngredients(responseJson);
-        responseJson["directions"] = getDirections(responseJson);
+        responseJson["nutrients"] = getNutrients(responseJson);
         fetch(`https://souschef-182502.appspot.com/api/v1/users/get_favorites?user_id=${firebase.auth().currentUser.uid}`)
           .then((response) => response.json())
           .then((favorites) => {
@@ -201,60 +135,29 @@ export default class RecipeDetailsView extends React.Component {
             </View>
           </View>
 
-          <View style={styles.detailBar}>
-            <Text style={styles.detailBarText}>{`${this.state.dataSource.readyInMinutes} min`}</Text>
-            {/*<Text style={styles.detailBarText}></Text>*/}
-            <TouchableHighlight onPress={() => nutritionInfoClicked(this.props.navigation)}>
-              <View style={styles.nutritionBar}>
-              <Text style={styles.detailBarText}>{this.state.dataSource.calories}</Text>
-              <Image
-                  style={styles.infoIcon}
-                  source={infoIcon}
-              />
-              </View>
-            </TouchableHighlight>
-            <Text style={styles.detailBarText}>{this.state.dataSource.diet}</Text>
-          </View>
-
           <View style={styles.sectionCard}>
-            <Text style={styles.sectionHeaderText}>Ingredients</Text>
+            <Text style={styles.sectionHeaderText}>Nutrition Info</Text>
+
+            <View style={styles.sectionHeader}>
+              <Text style = {styles.nutrientHeader}>Nutrient</Text>
+              <Text style = {styles.amountHeader}>Amount</Text>
+              <Text style = {styles.amountHeader}>Percent of DV</Text>
+            </View>
             <FlatList style={styles.ingredientsList}
-                       data={this.state.dataSource.ingredients}
+                       data={this.state.dataSource.nutrients}
                  renderItem={({item}) => (
-                              <View style={styles.ingredient}>
-                                <Text style = {styles.ingredientName}>{`${item.name.charAt(0).toUpperCase()}${item.name.slice(1)}`}</Text>
-                                <Text style = {styles.ingredientAmount}>{item.value}</Text>
+                              <View style={styles.nutrient}>
+                                <Text style = {styles.nutrientName}>{`${item.name.charAt(0).toUpperCase()}${item.name.slice(1)}`}</Text>
+                                <Text style = {styles.nutrientAmount}>{item.value}</Text>
+                                <Text style = {styles.nutrientAmount}>{item.percent}</Text>
                               </View>
                             )}
             />
           </View>
 
-          <View style={[styles.sectionCard,styles.directionsCard]}>
-            <Text style={styles.sectionHeaderText}>Directions</Text>
-            <FlatList style={styles.directionsList}
-                       data={this.state.dataSource.directions}
-                 renderItem={({item, index}) => (
-                              <View style={styles.direction}>
-                                <Text style={styles.directionNum}>{index+1}</Text>
-                                <Text style={styles.directionText}>{item.key.split('. ').slice(1).join('. ')}</Text>
-                              </View>
-                            )}
-            />
-          </View>
         </ScrollView>
 
 
-        <TouchableHighlight style={styles.actionButton} onPress={() => changeRecipeClicked(this.props.navigation)} underlayColor="rgba(0,0,0,0.3)">
-          <View style={styles.changeRecipeButton}>
-            <Text style={styles.changeRecipeButtonText}>{this.props.navigation.state.params.isRecipeChange ? "Select Recipe" : "Change Recipe"}</Text>
-          </View>
-        </TouchableHighlight>
-
-        {<TouchableHighlight style={styles.actionButton} onPress={() => startCookingClicked(this.props.navigation)} underlayColor="rgba(0,0,0,0.3)">
-          <View style={styles.startCookingButton}>
-            <Text style={styles.startCookingButtonText}>Start Cooking on Alexa or Watch</Text>
-          </View>
-        </TouchableHighlight>}
 
       </View>
     );
@@ -317,22 +220,12 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginBottom: 5,
   },
-  infoIcon: {
-    height: 20,
-    width: 20,
-    marginLeft: 0,
-    marginBottom: 0,
-  },
   detailBar: {
     flexDirection:'row',
     alignItems:'center',
     justifyContent: 'space-between',
     paddingVertical: 10,
     paddingHorizontal: 10,
-  },
-  nutritionBar: {
-    flexDirection:'row',
-    alignItems:'center',
   },
   detailBarText: {
     fontSize: 17,
@@ -357,7 +250,7 @@ const styles = StyleSheet.create({
   ingredientsList: {
     flex: 1,
   },
-  ingredient: {
+  nutrient: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -366,13 +259,43 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: 'rgba(255,255,255,0.15)',
   },
-  ingredientName: {
-    fontSize: 16,
-    color: 'white',
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  ingredientAmount: {
+  nutrientName: {
     fontSize: 16,
     color: 'white',
+    width: 110,
+  },
+  nutrientAmount: {
+    fontSize: 16,
+    color: 'white',
+    width: 80,
+  },
+  nutrientHeader: {
+    fontSize: 16,
+    color: 'white',
+    width: 110,
+    fontWeight: 'bold'
+  },
+  amountHeader: {
+    fontSize: 16,
+    color: 'white',
+    width: 80,
+    fontWeight: 'bold'
+  },
+  percentHeader: {
+    fontSize: 16,
+    color: 'white',
+    width: 80,
+    fontWeight: 'bold'
+  },
+  ingredientPercent: {
+    fontSize: 16,
+    color: 'white',
+    width: 40,
   },
   directionsCard: {
     marginBottom: 30,
@@ -415,33 +338,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 20,
     marginVertical: 7.5,
-  },
-  changeRecipeButton: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  changeRecipeButtonText: {
-    color: 'white',
-    fontSize: 17,
-    textAlign: 'center',
-  },
-  startCookingButton: {
-    flex: 1,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  startCookingButtonText: {
-    color: '#056A63',
-    fontSize: 17,
-    textAlign: 'center',
   },
 });

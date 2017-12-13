@@ -9,6 +9,7 @@ import LoginView from './LoginView.js';
 import SignUpView from './SignUpView.js';
 import ProfileView from './ProfileView.js';
 import ChangeRecipeView from './ChangeRecipeView.js';
+import NutritionView from './NutritionView.js'
 import * as firebase from 'firebase';
 
 const win = Dimensions.get('window');
@@ -80,6 +81,7 @@ export const SimpleApp = StackNavigator({
   Recipe: { screen: RecipeDetailsView },
   List: { screen: ShoppingListView },
   ChangeRecipe: {screen: ChangeRecipeView},
+  Nutrition: {screen: NutritionView },
 }, {
   headerMode: 'screen',
 });
